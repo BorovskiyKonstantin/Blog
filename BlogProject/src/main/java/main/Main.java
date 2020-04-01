@@ -68,9 +68,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  * */
 
-//Тип поля TINYINT лучше задать типом переменной byte или @Column(columnDefinition = "TINYINT")? Или лучше использовать оба вараинта сразу?
-//Как в global_settings поставить зависимость поля "name" от поля "code". Как лучше поставить эти глобальные настройки?
-
 @SpringBootApplication
 public class Main {
     public static void main(String[] args) {

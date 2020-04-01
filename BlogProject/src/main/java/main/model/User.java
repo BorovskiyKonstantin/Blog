@@ -12,7 +12,8 @@ import java.sql.Timestamp;
  *       ● reg_time   DATETIME   NOT   NULL   -   дата   и   время   регистрации   пользователя
  *       ● name   VARCHAR(255)   NOT   NULL   -   имя   пользователя
  *       ● email   VARCHAR(255)   NOT   NULL   -   e-mail   пользователя
- *       ● password   VARCHAR(255)   NOT   NULL   -   хэш   пароля   пользователя  ● code   VARCHAR(255)   -   код   для   восстановления   пароля,   может   быть   NULL
+ *       ● password   VARCHAR(255)   NOT   NULL   -   хэш   пароля   пользователя
+ *       ● code   VARCHAR(255)   -   код   для   восстановления   пароля,   может   быть   NULL
  *       ● photo   TEXT   -   фотография   (ссылка   на   файл),   может   быть   NULL
  */
 @Entity
@@ -23,22 +24,18 @@ public class User {
     private int id;
 
     @Column(name = "is_moderator", columnDefinition = "TINYINT")
-    @NotNull
-    private byte isModerator;
+    private boolean isModerator;
 
     @Column(name = "reg_time")
-    @NotNull
     private Timestamp regTime;
 
-    @NotNull
     private String name;
 
-    @NotNull
     private String email;
 
-    @NotNull
     private String password;
 
-    @Column(columnDefinition = "TEXT")
+    private String code;
+
     private String photo;
 }

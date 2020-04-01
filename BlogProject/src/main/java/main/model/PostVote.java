@@ -33,5 +33,5 @@ public class PostVote {
 
     @Column(columnDefinition = "TINYINT")
     @NotNull
-    private byte value;
+    private boolean value;
 }

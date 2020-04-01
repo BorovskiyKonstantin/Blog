@@ -24,7 +24,7 @@ public class Post {
 
     @Column(name = "is_active",columnDefinition = "TINYINT")
     @NotNull
-    private byte isActive;
+    private boolean isActive;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "moderation_status", columnDefinition = "VARCHAR(255) default 'NEW'")

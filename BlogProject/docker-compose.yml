@@ -1,0 +1,26 @@
+# docker-composer.yaml
+version: '2.1'
+services:
+  mysqldb:
+    image: mysql
+    volumes:
+      - E:/skillbox-diplom/mysql-data:/var/lib/mysql
+      - ./docker-init-files:/docker-entrypoint-initdb.d
+    restart: always
+    #command: --default-authentication-plugin=mysql_native_password --general_log=1
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: blog
+      MYSQL_USER: skillbox
+      MYSQL_PASSWORD: skillbox
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
