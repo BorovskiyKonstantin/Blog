@@ -17,16 +17,65 @@ import java.sql.Timestamp;
 public class PostComments {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private int id;
 
-    @Column(name = "parent_id")
     @NotNull
+    @Column(name = "parent_id")
     private int parentId;
 
-    @Column(name = "user_id")
     @NotNull
+    @Column(name = "post_id")
+    private int postId;
+
+    @NotNull
+    @Column(name = "user_id")
     private int userId;
 
     @NotNull
+    @Column(name = "time")
     private Timestamp time;
+
+    //=============================================
+    //Getters And Setters
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
+    public int getPostId() {
+        return postId;
+    }
+
+    public void setPostId(int postId) {
+        this.postId = postId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public Timestamp getTime() {
+        return time;
+    }
+
+    public void setTime(Timestamp time) {
+        this.time = time;
+    }
 }

@@ -3,9 +3,6 @@ package main;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
-//Перенести все сущности в тестовый проект hibernate. Протестить и настроить всё в нем.
-
 /**ToDo:
  *      1. Подключить Hibernate
  *      2. Создать схему в БД

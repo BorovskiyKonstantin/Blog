@@ -1,4 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `blog` /*!40100 DEFAULT CHARACTER SET utf8 */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE  IF NOT EXISTS `blog` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `blog`;
 -- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
@@ -34,7 +34,6 @@ CREATE TABLE `posts` (
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `view_count` int(11) NOT NULL,
-  `moderator_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id_idx` (`user_id`),
   CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
@@ -59,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-03-31  0:05:59
+-- Dump completed on 2020-04-01 22:39:11

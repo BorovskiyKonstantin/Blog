@@ -20,37 +20,113 @@ import java.sql.Timestamp;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private int id;
 
-    @Column(name = "is_active",columnDefinition = "TINYINT")
     @NotNull
+    @Column(name = "is_active",columnDefinition = "TINYINT")
     private boolean isActive;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "moderation_status", columnDefinition = "VARCHAR(255) default 'NEW'")
-    @NotNull
     private ModerationStatus moderationStatus = ModerationStatus.NEW;
 
     @Column(name = "moderator_id")
     private int moderatorId;
 
-    @Column(name = "user_id")
     @NotNull
+    @Column(name = "user_id")
     private int userId;
 
     @NotNull
+    @Column(name = "time")
     private Timestamp time;
 
     @NotNull
+    @Column(name = "title")
     private String title;
 
-    @Column(columnDefinition = "TEXT")
     @NotNull
-    private String text;        //Как сделать, чтобы при создании был тип TEXT?
+    @Column(name = "text", columnDefinition = "TEXT")
+    private String text;
 
-    @Column(name = "view_count")
     @NotNull
+    @Column(name = "view_count")
     private int viewCount;
 
+    //=============================================
+    //Getters And Setters
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public ModerationStatus getModerationStatus() {
+        return moderationStatus;
+    }
+
+    public void setModerationStatus(ModerationStatus moderationStatus) {
+        this.moderationStatus = moderationStatus;
+    }
+
+    public int getModeratorId() {
+        return moderatorId;
+    }
+
+    public void setModeratorId(int moderatorId) {
+        this.moderatorId = moderatorId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public Timestamp getTime() {
+        return time;
+    }
+
+    public void setTime(Timestamp time) {
+        this.time = time;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public int getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
+    }
 }

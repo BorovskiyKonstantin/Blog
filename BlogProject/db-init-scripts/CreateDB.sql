@@ -84,3 +84,8 @@ CREATE TABLE `global_settings` (
   `value` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO global_settings(code,name,value) VALUES
+('MULTIUSER_MODE','Многопользовательский режим','NO'),
+('POST_PREMODERATION','Премодерация постов','NO'),
+('STATISTICS_IN_PUBLIC','Показывать всем статистику блога','NO');

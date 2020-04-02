@@ -3,4 +3,3 @@ spring.datasource.username: root
 spring.datasource.password: test
 spring.jpa.database-platform: org.hibernate.dialect.MySQL8Dialect
 spring.jpa.hibernate.ddl-auto: update
-spring.session.store-type: redis
