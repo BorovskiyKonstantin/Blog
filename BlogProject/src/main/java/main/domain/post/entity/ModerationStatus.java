@@ -1,4 +1,4 @@
-package main.model;
+package main.domain.post.entity;
 
 public enum ModerationStatus {
     NEW,

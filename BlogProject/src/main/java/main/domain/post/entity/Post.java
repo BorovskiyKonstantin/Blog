@@ -1,4 +1,4 @@
-package main.model;
+package main.domain.post.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

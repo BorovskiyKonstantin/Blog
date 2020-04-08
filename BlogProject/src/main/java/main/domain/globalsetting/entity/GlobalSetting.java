@@ -1,4 +1,4 @@
-package main.model;
+package main.domain.globalsetting.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "global_settings")
-public class GlobalSettings {
+public class GlobalSetting {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

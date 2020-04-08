@@ -1,4 +1,4 @@
-package main.model;
+package main.domain.captchacode.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
