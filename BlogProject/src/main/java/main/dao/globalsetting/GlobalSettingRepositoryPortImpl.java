@@ -5,6 +5,8 @@ import main.domain.globalsetting.entity.GlobalSetting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 //Реализация RepositoryPort в слое dao. Внедряется как компонет в слой domain UseCase (где @Autowired RepositoryPort)
 //Осуществляет связь dao-domain (Repository-UseCase)
 @Component
@@ -14,7 +16,7 @@ public class GlobalSettingRepositoryPortImpl implements GlobalSettingRepositoryP
     private GlobalSettingRepository globalSettingRepository;
 
     @Override
-    public GlobalSetting findByCode(String code) {
+    public Optional<GlobalSetting> findByCode(String code) {
         return globalSettingRepository.findByCode(code);
     }
 

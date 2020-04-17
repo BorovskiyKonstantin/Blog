@@ -12,13 +12,13 @@ public class GlobalSettingUseCase {
     GlobalSettingRepositoryPort globalSettingRepositoryPort;
 
     public void editSettings(GlobalSettingDto settingDto) {
-        GlobalSetting multiuserMode = globalSettingRepositoryPort.findByCode("MULTIUSER_MODE");
-        GlobalSetting postPremoderation = globalSettingRepositoryPort.findByCode("POST_PREMODERATION");
-        GlobalSetting statisticsInPublic = globalSettingRepositoryPort.findByCode("STATISTICS_IN_PUBLIC");
+        GlobalSetting multiuserMode = globalSettingRepositoryPort.findByCode("MULTIUSER_MODE").orElseThrow();
+        GlobalSetting postPremoderation = globalSettingRepositoryPort.findByCode("POST_PREMODERATION").orElseThrow();
+        GlobalSetting statisticsInPublic = globalSettingRepositoryPort.findByCode("STATISTICS_IN_PUBLIC").orElseThrow();
 
-        multiuserMode.setValue(settingDto.isMULTIUSER_MODE() ? "YES" : "NO");
-        postPremoderation.setValue(settingDto.isPOST_PREMODERATION() ? "YES" : "NO");
-        statisticsInPublic.setValue(settingDto.isSTATISTICS_IN_PUBLIC() ? "YES" : "NO");
+        multiuserMode.setValue(settingDto.isEnabledMULTIUSER_MODE() ? "YES" : "NO");
+        postPremoderation.setValue(settingDto.isEnabledPOST_PREMODERATION() ? "YES" : "NO");
+        statisticsInPublic.setValue(settingDto.isEnabledSTATISTICS_IN_PUBLIC() ? "YES" : "NO");
 
         globalSettingRepositoryPort.save(multiuserMode);
         globalSettingRepositoryPort.save(postPremoderation);
@@ -26,9 +26,9 @@ public class GlobalSettingUseCase {
     }
 
     public GlobalSettingDto getSettings() {
-        String multiuserModeValue = globalSettingRepositoryPort.findByCode("MULTIUSER_MODE").getValue();
-        String postPremoderationValue = globalSettingRepositoryPort.findByCode("POST_PREMODERATION").getValue();
-        String statisticsInPublicValue = globalSettingRepositoryPort.findByCode("STATISTICS_IN_PUBLIC").getValue();
+        String multiuserModeValue = globalSettingRepositoryPort.findByCode("MULTIUSER_MODE").orElseThrow().getValue();
+        String postPremoderationValue = globalSettingRepositoryPort.findByCode("POST_PREMODERATION").orElseThrow().getValue();
+        String statisticsInPublicValue = globalSettingRepositoryPort.findByCode("STATISTICS_IN_PUBLIC").orElseThrow().getValue();
 
         return new GlobalSettingDto(
                 multiuserModeValue.equals("YES"),

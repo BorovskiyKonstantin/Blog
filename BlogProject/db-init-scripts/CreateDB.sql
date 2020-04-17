@@ -8,17 +8,18 @@ CREATE TABLE `users` (
   `reg_time` datetime NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `code` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `code` varchar(255),
   `photo` text,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_UNIQUE` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `posts` (
   `id` int NOT NULL AUTO_INCREMENT,
   `is_active` tinyint NOT NULL,
   `moderation_status` varchar(45) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'NEW',
-  `moderation_id` int DEFAULT NULL,
+  `moderator_id` int DEFAULT NULL,
   `user_id` int NOT NULL,
   `time` datetime NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
@@ -61,12 +62,15 @@ CREATE TABLE `tag2post` (
 
 CREATE TABLE `post_comments` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `parent_id` int NOT NULL,
-  `time` datetime NOT NULL,
+  `parent_id` int,
   `user_id` int NOT NULL,
+  `post_id` int NOT NULL,
+  `time` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_idx` (`user_id`),
-  CONSTRAINT `user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  KEY `post_id fk_idx` (`post_id`),
+  CONSTRAINT `user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `post_id fk` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`)
 ) ENGINE=InnoDB ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `captcha_codes` (

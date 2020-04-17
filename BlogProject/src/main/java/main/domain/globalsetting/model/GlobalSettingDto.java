@@ -11,15 +11,17 @@ public class GlobalSettingDto {
         this.STATISTICS_IN_PUBLIC = STATISTICS_IN_PUBLIC;
     }
 
-    public boolean isMULTIUSER_MODE() {
+    public boolean isEnabledMULTIUSER_MODE() {
         return MULTIUSER_MODE;
     }
 
-    public boolean isPOST_PREMODERATION() {
+    public boolean isEnabledPOST_PREMODERATION() {
         return POST_PREMODERATION;
     }
 
-    public boolean isSTATISTICS_IN_PUBLIC() {
+    public boolean isEnabledSTATISTICS_IN_PUBLIC() {
         return STATISTICS_IN_PUBLIC;
     }
+
+
 }
