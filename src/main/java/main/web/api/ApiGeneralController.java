@@ -19,13 +19,13 @@ import java.util.List;
  * + 1. Общие   данные   блога   -   GET   /api/init
  *   2. Загрузка   изображений   -   POST   /api/image
  *   3. Отправка   комментария   к   посту   -   POST   /api/comment/
- * - 4. Получение   списка   тэгов   -   GET   /api/tag/ (!!!!!!!!!!Нужны изеры и посты для тестирования)
+ * - (заглушка) 4. Получение   списка   тэгов   -   GET   /api/tag/ (!!!!!!!!!!Нужны изеры и посты для тестирования)
  *   5. Модерация   поста   -   POST   /api/moderation
  * - 6. Календарь   (количества   публикаций)   -   GET   /api/calendar/
  *   7. Редактирование   моего   профиля   -   POST   /api/profile/my
  *   8. Моя   статистика   -   GET   /api/statistics/my
  * ? 9. Статистика   по   всему   блогу   -   GET   /api/statistics/all
- * + 10. Получение   настроек   -   GET   /api/settings/ (доделать проверку авторизации и прав модерации)
+ * - 10. Получение   настроек   -   GET   /api/settings/ (доделать проверку авторизации и прав модерации)
  * + 11. Сохранение   настроек   -   PUT   /api/settings/
  */
 
@@ -38,7 +38,7 @@ public class ApiGeneralController {
 
 
     //    1. Общие   данные   блога   -   GET   /api/init
-    @GetMapping(value = "/api/init", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/api/init")
     public ObjectNode getBlogInfo() {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode blogInfoJson = objectMapper.createObjectNode();
@@ -51,14 +51,15 @@ public class ApiGeneralController {
         return blogInfoJson;
     }
 
+    //TODO: Заглушка для главной страницы! Реализовать в будущем
     //4. Получение   списка   тэгов   -   GET   /api/tag/
-//    @GetMapping(value = "/api/tag/", produces = {MediaType.APPLICATION_JSON_VALUE})
-//    public List<Tag> getTags(@RequestParam(name = "query", required = false) String query){
-//        return tagUseCase.getTags(query);
-//    }
+    @GetMapping(value = "/api/tag")
+    public List<Tag> getTags(@RequestParam(name = "query", required = false) String query){
+        return tagUseCase.getTags(query);
+    }
 
     //    10. Получение   настроек   -   GET   /api/settings/
-    @GetMapping(value = "/api/settings", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/api/settings")
     public GlobalSettingDto getSettings() {
         return globalSettingUseCase.getSettings();
     }

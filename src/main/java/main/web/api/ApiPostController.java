@@ -29,13 +29,10 @@ public class ApiPostController {
     PostUseCase postUseCase;
 
 //    1. Список   постов
-    @GetMapping(value = "/api/post/", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/api/post")
     public PostsDTO getPosts(@RequestParam(name = "offset", defaultValue = "0") int offset,
                              @RequestParam(name = "limit") int limit,
                              @RequestParam(name = "mode") String mode) {
         return postUseCase.getPostsDTO(offset, limit, mode);
     }
-
-//    3. Получение   поста   -   GET   /api/post/ID
-
 }
