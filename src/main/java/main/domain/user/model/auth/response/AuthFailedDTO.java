@@ -1,6 +1,6 @@
-package main.domain.user.model.login.response;
+package main.domain.user.model.auth.response;
 
-public class LoginFailedDTO implements LoginResponse {
+public class AuthFailedDTO implements AuthResponse {
     private final boolean result = false;
 
     public boolean isResult() {

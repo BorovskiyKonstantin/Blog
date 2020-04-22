@@ -1,13 +1,12 @@
-package main.domain.user.model.login.request;
+package main.domain.user.model.auth.request;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-public class UserLoginRequestDTO {
+public class AuthRequestDTO {
     private String email;
     private String password;
 
-    public UserLoginRequestDTO(String email, String password) {
+    public AuthRequestDTO(String email, String password) {
         this.email = email;
         this.password = password;
     }

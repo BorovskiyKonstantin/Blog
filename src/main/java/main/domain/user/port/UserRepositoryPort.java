@@ -7,5 +7,8 @@ import java.util.Optional;
 
 public interface UserRepositoryPort {
     List<User> findAll();
+
     Optional<User> findById(int id);
+
+    Optional<User> findUserByEmailAndPassword(String email, String password);
 }

@@ -1,11 +1,21 @@
-package main.domain.user.model.login.response;
+package main.domain.user.model.auth.response;
 
-public class LoginSuccessfulDTO implements LoginResponse {
+import main.domain.user.entity.User;
+
+public class AuthSuccessfulDTO implements AuthResponse {
     private final boolean result = true;
-    private InnerUserInfo user;
+    private InnerUserInfo userInfo;
 
-    public LoginSuccessfulDTO(int id, String name, String photo, String email, boolean moderation, int moderationCount, boolean settings) {
-        this.user = new InnerUserInfo(id, name, photo, email, moderation, moderationCount, settings);
+    public AuthSuccessfulDTO(int id, String name, String photo, String email, boolean moderation, int moderationCount, boolean settings) {
+        this.userInfo = new InnerUserInfo(id, name, photo, email, moderation, moderationCount, settings);
+    }
+//
+//    public AuthSuccessfulDTO(User user){
+//        super;
+//    }
+
+    public AuthSuccessfulDTO(InnerUserInfo userInfo){
+        this.userInfo = userInfo;
     }
 
 
@@ -13,8 +23,8 @@ public class LoginSuccessfulDTO implements LoginResponse {
         return result;
     }
 
-    public InnerUserInfo getUser() {
-        return user;
+    public InnerUserInfo getUserInfo() {
+        return userInfo;
     }
 
     //User info

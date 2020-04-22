@@ -1,8 +1,11 @@
 package main.domain.user.entity;
 
+import main.domain.post.entity.Post;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  *      users   -   пользователи
@@ -48,6 +51,9 @@ public class User {
 
     @Column(name = "photo", columnDefinition = "TEXT")
     private String photo;
+
+    @OneToMany(mappedBy = "moderator")
+    private List<Post> moderatedPosts;
 
     //=============================================
     //Getters And Setters
@@ -114,5 +120,13 @@ public class User {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public List<Post> getModeratedPosts() {
+        return moderatedPosts;
+    }
+
+    public void setModeratedPosts(List<Post> moderatedPosts) {
+        this.moderatedPosts = moderatedPosts;
     }
 }

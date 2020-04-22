@@ -34,8 +34,9 @@ public class Post {
     @Column(name = "moderation_status", columnDefinition = "VARCHAR(255) default 'NEW'")
     private ModerationStatus moderationStatus = ModerationStatus.NEW;
 
-    @Column(name = "moderator_id")
-    private Integer moderatorId;
+    @ManyToOne
+    @JoinColumn(name = "moderator_id")
+    private User moderator;
 
     @NotNull
     @Column(name = "user_id")
@@ -73,8 +74,8 @@ public class Post {
         return moderationStatus;
     }
 
-    public Integer getModeratorId() {
-        return moderatorId;
+    public User getModerator() {
+        return moderator;
     }
 
     public int getUserId() {
