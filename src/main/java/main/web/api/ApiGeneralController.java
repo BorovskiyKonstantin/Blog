@@ -9,6 +9,7 @@ import main.domain.tag.entity.Tag;
 import main.domain.tag.usecase.TagUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,12 +61,14 @@ public class ApiGeneralController {
 
     //    10. Получение   настроек   -   GET   /api/settings/
     @GetMapping(value = "/api/settings")
+//    @Secured("ROLE_MODERATOR")
     public GlobalSettingDto getSettings() {
         return globalSettingUseCase.getSettings();
     }
 
     //    11. Сохранение   настроек
     @PutMapping(value = "/api/settings")
+    @Secured("ROLE_MODERATOR")
     public void putSettings(@RequestBody GlobalSettingDto settingEditDto) {
         globalSettingUseCase.editSettings(settingEditDto);
     }

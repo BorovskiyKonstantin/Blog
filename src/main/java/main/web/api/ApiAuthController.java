@@ -2,17 +2,20 @@ package main.web.api;
 
 //обрабатывает все запросы /api/auth/*
 
-import main.domain.user.model.auth.request.AuthRequestDTO;
-import main.domain.user.model.auth.response.AuthResponse;
-import main.domain.user.usecase.UserSecurity;
+import main.domain.user.entity.User;
+import main.domain.user.model.auth.response.AuthResponseDTO;
+import main.domain.user.usecase.UserUseCase;
+import main.security.user.model.WebUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 1. +(заглушка) Вход   -   POST   /api/auth/login
@@ -27,20 +30,19 @@ import java.util.HashMap;
 @RestController
 public class ApiAuthController {
     @Autowired
-    UserSecurity userSecurity;
+    UserUseCase userUseCase;
 
-//    1. Вход   -   POST   /api/auth/login
-    @PostMapping(value = "/api/auth/login")
-    public AuthResponse login(HttpServletRequest request, @RequestBody AuthRequestDTO loginDTO) {
-        AuthResponse responseDTO = userSecurity.loginUser(request, loginDTO);
-        return responseDTO;
-    }
-
-    //TODO: Заглушка для главной страницы! Реализовать в будущем
-//    2. Статус   авторизации   -   GET   /api/auth/check
+    //    2. Статус   авторизации   -   GET   /api/auth/check
     @GetMapping(value = "/api/auth/check")
-    public AuthResponse authCheck(HttpServletRequest request) {
-        return userSecurity.checkAuth(request);
+    public AuthResponseDTO authCheck(Authentication authentication) {
+        if (authentication == null) {
+            return AuthResponseDTO.failed();
+        }
+        else {
+            WebUser webUser = (WebUser) authentication.getPrincipal();
+            String email = webUser.getUsername();
+            User user = userUseCase.getUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+            return AuthResponseDTO.successfulLogIn(user);
+        }
     }
-
 }

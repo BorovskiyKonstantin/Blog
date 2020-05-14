@@ -1,10 +1,7 @@
 package main.domain.user.usecase;
 
-import main.domain.user.entity.User;
-import main.domain.user.model.auth.request.AuthRequestDTO;
-import main.domain.user.model.auth.response.AuthFailedDTO;
-import main.domain.user.model.auth.response.AuthResponse;
-import main.domain.user.model.auth.response.AuthSuccessfulDTO;
+
+
 import main.domain.user.port.UserRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,30 +19,30 @@ public class UserSecurity {
     @Autowired
     UserRepositoryPort userRepositoryPort;
 
-    public AuthResponse checkAuth(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-
-
-        /**
-         * Авторизация пользователя из хранилища
-         * */
-        String sessionId = session.getId();
-        if (SESSION_HOLDER.containsKey(sessionId)) {
-            int userId = SESSION_HOLDER.get(sessionId);
-            User user = userRepositoryPort.findById(userId).orElseThrow();
-
-            //Create DTO
-            int id = user.getId();
-            String name = user.getName();
-            String photo = user.getPhoto();
-            String email = user.getEmail();
-            boolean moderation = user.isModerator();
-            int moderationCount = user.getModeratedPosts().size();
-            boolean settings = moderation;
-
-            return new AuthSuccessfulDTO(id, name, photo, email, moderation, moderationCount, settings);
-        }
-        else return new AuthFailedDTO();
+//    public AuthResponse checkAuth(HttpServletRequest request) {
+//        HttpSession session = request.getSession();
+//
+//
+//        /**
+//         * Авторизация пользователя из хранилища
+//         * */
+//        String sessionId = session.getId();
+//        if (SESSION_HOLDER.containsKey(sessionId)) {
+//            int userId = SESSION_HOLDER.get(sessionId);
+//            User user = userRepositoryPort.findById(userId).orElseThrow();
+//
+//            //Create DTO
+//            int id = user.getId();
+//            String name = user.getName();
+//            String photo = user.getPhoto();
+//            String email = user.getEmail();
+//            boolean moderation = user.isModerator();
+//            int moderationCount = user.getModeratedPosts().size();
+//            boolean settings = moderation;
+//
+//            return new AuthSuccessfulDTO(id, name, photo, email, moderation, moderationCount, settings);
+//        }
+//        else return new AuthFailedDTO();
 
         /**
          * Авторизация пользователя из атрибута сессии
@@ -67,33 +64,33 @@ public class UserSecurity {
 //
 //            return new AuthSuccessfulDTO(id, name, photo, email, moderation, moderationCount, settings);
 //        }
-    }
+//    }
 
-    public AuthResponse loginUser(HttpServletRequest request, AuthRequestDTO loginDTO) {
-        String loginEmail = loginDTO.getEmail();
-        String loginPassword = loginDTO.getPassword();
-        User user = userRepositoryPort.findUserByEmailAndPassword(loginEmail, loginPassword).orElse(null);
-        if (user == null) {
-            return new AuthFailedDTO();
-        } else {
-
-            HttpSession session = request.getSession(true);
-            //Create session attribute
-            session.setAttribute("user", user.getId());
-            //Save session
-            SESSION_HOLDER.put(session.getId(), user.getId());
-
-            //Create DTO
-            int id = user.getId();
-            String name = user.getName();
-            String photo = user.getPhoto();
-            String email = user.getEmail();
-            boolean moderation = user.isModerator();
-            int moderationCount = user.getModeratedPosts().size();
-            boolean settings = moderation;
-
-
-            return new AuthSuccessfulDTO(id, name, photo, email, moderation, moderationCount, settings);
-        }
-    }
+//    public AuthResponse loginUser(HttpServletRequest request, AuthRequestDTO loginDTO) {
+//        String loginEmail = loginDTO.getEmail();
+//        String loginPassword = loginDTO.getPassword();
+//        User user = userRepositoryPort.findUserByEmailAndPassword(loginEmail, loginPassword).orElse(null);
+//        if (user == null) {
+//            return new AuthFailedDTO();
+//        } else {
+//
+//            HttpSession session = request.getSession(true);
+//            //Create session attribute
+//            session.setAttribute("user", user.getId());
+//            //Save session
+//            SESSION_HOLDER.put(session.getId(), user.getId());
+//
+//            //Create DTO
+//            int id = user.getId();
+//            String name = user.getName();
+//            String photo = user.getPhoto();
+//            String email = user.getEmail();
+//            boolean moderation = user.isModerator();
+//            int moderationCount = user.getModeratedPosts().size();
+//            boolean settings = moderation;
+//
+//
+//            return new AuthSuccessfulDTO(id, name, photo, email, moderation, moderationCount, settings);
+//        }
+//    }
 }

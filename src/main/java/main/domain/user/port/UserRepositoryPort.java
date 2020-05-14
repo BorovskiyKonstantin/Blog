@@ -11,4 +11,8 @@ public interface UserRepositoryPort {
     Optional<User> findById(int id);
 
     Optional<User> findUserByEmailAndPassword(String email, String password);
+
+    Optional<User> findUserByName(String username);
+
+    Optional<User> findUserByEmail(String email);
 }

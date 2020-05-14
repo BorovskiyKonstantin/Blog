@@ -27,4 +27,15 @@ public class UserRepositoryPortImpl implements UserRepositoryPort {
     public Optional <User> findUserByEmailAndPassword(String email, String password) {
         return userRepository.findUserByEmailAndPassword(email, password);
     }
+
+    @Override
+    public Optional<User> findUserByName(String username) {
+        return userRepository.findUserByName(username);
+    }
+
+    @Override
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
+
 }
