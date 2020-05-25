@@ -4,8 +4,12 @@ import main.domain.captchacode.model.CaptchaCodeResponseDTO;
 import main.domain.captchacode.usecase.CaptchaUseCase;
 import main.domain.user.entity.User;
 import main.domain.user.model.auth.AuthResponseDTO;
+import main.domain.user.model.changepass.ChangePassRequestDTO;
+import main.domain.user.model.changepass.ChangePassResponseDTO;
 import main.domain.user.model.register.RegisterRequestDTO;
 import main.domain.user.model.register.RegisterResponseDTO;
+import main.domain.user.model.restore.RestoreRequestDTO;
+import main.domain.user.model.restore.RestoreResponseDTO;
 import main.domain.user.usecase.UserUseCase;
 import main.web.security.user.model.WebUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +39,22 @@ public class ApiAuthController {
     @GetMapping(value = "/api/auth/check")
     public AuthResponseDTO authCheck(Authentication authentication) {
         return userUseCase.authCheck(authentication);
+    }
+
+    // 3. Восстановление   пароля   -   POST   /api/auth/restore
+    @PostMapping(value = "/api/auth/restore")
+    public RestoreResponseDTO restorePassword(@RequestBody RestoreRequestDTO requestDTO){
+        return userUseCase.restorePassword(requestDTO.getEmail());
+    }
+
+    // 4. Изменение   пароля   -   POST   /api/auth/password
+    @PostMapping(value = "/api/auth/password")
+    public ChangePassResponseDTO changePassword(@RequestBody ChangePassRequestDTO requestDTO){
+        return userUseCase.changePassword(
+                requestDTO.getCode(),
+                requestDTO.getPassword(),
+                requestDTO.getCaptcha(),
+                requestDTO.getCaptchaSecret());
     }
 
     // 5. Регистрация   -   POST   /api/auth/register

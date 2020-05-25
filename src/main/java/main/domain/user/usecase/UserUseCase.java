@@ -4,7 +4,9 @@ import main.domain.captchacode.entity.CaptchaCode;
 import main.domain.captchacode.port.CaptchaCodeRepositoryPort;
 import main.domain.user.entity.User;
 import main.domain.user.model.auth.AuthResponseDTO;
+import main.domain.user.model.changepass.ChangePassResponseDTO;
 import main.domain.user.model.register.RegisterResponseDTO;
+import main.domain.user.model.restore.RestoreResponseDTO;
 import main.domain.user.port.UserRepositoryPort;
 import main.web.security.user.model.WebUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,5 +82,79 @@ public class UserUseCase {
                     .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
             return AuthResponseDTO.successfulLogIn(user);
         }
+    }
+
+
+    public ChangePassResponseDTO changePassword(String code, String password, String captcha, String captchaSecret) {
+        Map<String, String> errors = new LinkedHashMap<>();
+        User user = userRepositoryPort.findUserByCode(code).orElse(null);
+        if (user == null)
+            errors.put("code", "Ссылка   для   восстановления   пароля   устарела.   <a   href=”/auth/restore”>Запросить   ссылку   снова</a>");
+
+        if (password.length() < 6)
+            errors.put("password", "Пароль   короче   6-ти  с имволов");
+
+        CaptchaCode captchaCode = captchaCodeRepositoryPort.findBySecretCode(captchaSecret).orElseThrow();
+        if (!captchaCode.getCode().equals(captcha))
+            errors.put("captcha", "Код с картинки введён неверно");
+
+        //Формирование ответа при наличии ошибок
+        if (errors.size() > 0)
+            return new ChangePassResponseDTO(false, errors);
+        else {
+            user.setPassword(password);
+            userRepositoryPort.save(user);
+            return new ChangePassResponseDTO(true, null);
+        }
+
+    }
+
+    public RestoreResponseDTO restorePassword(String email) {
+        //поиск юзера
+        User user = userRepositoryPort.findUserByEmail(email).orElse(null);
+
+        //если не найден ответ=false
+        if (user == null)
+            return new RestoreResponseDTO(false);
+
+        /** ему  должно  отправляться  письмо  со  ссылкой  на  восстановление
+         * пароля  следующего  вида  -  /login/change-password/HASH,  где  HASH  -  сгенерированный
+         код  вида  “b55ca6ea6cb103c6384cfa366b7ce0bdcac092be26bc0”  (код  должен
+         генерироваться   случайным   образом   и   сохраняться   в   базе   данных   в   поле   users.code).
+         */
+        //генерация HASH
+        String hash = generateHash(45);
+
+        //сохранение HASH в users.code
+        user.setCode(hash);
+        userRepositoryPort.save(user);
+
+        //Составление текста письма
+        String mailText = "Добрый день, " + user.getName() +
+                "\nНа DevPub был получен запрос на сброс пароля Вашей учетной записи." +
+                "\nЕсли Вы не отправляли запрос, то просто проигнорируйте это письмо." +
+                "\n" +
+                "\nВ противном случае перейдите по ссылке: " +
+                "\n/login/change-password/" + hash;
+
+        //Отправка письма
+        //TODO: сделать сервис отправки сообщений
+        System.out.println("\n\n\n==========ПИСЬМО==============");
+        System.out.println(mailText);
+        System.out.println("==============================");
+
+        //Response
+        return new RestoreResponseDTO(true);
+    }
+    private String generateHash(int length) {
+        final String symbols = "abcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder builder = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            int symbolNumb = random.nextInt(symbols.length());
+            char symbol = symbols.charAt(symbolNumb);
+            builder.append(symbol);
+        }
+        return builder.toString();
     }
 }
