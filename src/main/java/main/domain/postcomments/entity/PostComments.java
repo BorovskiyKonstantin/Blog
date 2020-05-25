@@ -1,5 +1,7 @@
 package main.domain.postcomments.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -12,70 +14,24 @@ import java.sql.Timestamp;
  *       ?● user_id   INT   NOT   NULL   -   автор   комментария
  *       ● time   DATETIME   NOT   NULL   -   дата   и   время  к омментария
  */
+@Data
 @Entity
 @Table(name = "post_comments")
 public class PostComments {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @NotNull
-    @Column(name = "parent_id")
+    @Column(name = "parent_id", nullable = false)
     private int parentId;
 
-    @NotNull
-    @Column(name = "post_id")
+    @Column(name = "post_id", nullable = false)
     private int postId;
 
-    @NotNull
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private int userId;
 
-    @NotNull
-    @Column(name = "time")
+    @Column(name = "time", nullable = false)
     private Timestamp time;
-
-    //=============================================
-    //Getters And Setters
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(int parentId) {
-        this.parentId = parentId;
-    }
-
-    public int getPostId() {
-        return postId;
-    }
-
-    public void setPostId(int postId) {
-        this.postId = postId;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public Timestamp getTime() {
-        return time;
-    }
-
-    public void setTime(Timestamp time) {
-        this.time = time;
-    }
 }

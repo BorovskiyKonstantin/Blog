@@ -16,4 +16,9 @@ public class TagRepositoryPortImpl implements TagRepositoryPort {
     public List<Tag> findAll() {
         return (List<Tag>) tagRepository.findAll();
     }
+
+    @Override
+    public void save(Tag tag) {
+        tagRepository.save(tag);
+    }
 }

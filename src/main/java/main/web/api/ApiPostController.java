@@ -2,10 +2,9 @@ package main.web.api;
 
 //обрабатывает все запросы /api/post/*
 
-import main.domain.post.model.PostsDTO;
+import main.domain.post.model.PostRequestDTO;
 import main.domain.post.usecase.PostUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,9 +29,9 @@ public class ApiPostController {
 
 //    1. Список   постов
     @GetMapping(value = "/api/post")
-    public PostsDTO getPosts(@RequestParam(name = "offset", defaultValue = "0") int offset,
-                             @RequestParam(name = "limit") int limit,
-                             @RequestParam(name = "mode") String mode) {
+    public PostRequestDTO getPosts(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                   @RequestParam(name = "limit") int limit,
+                                   @RequestParam(name = "mode") String mode) {
         return postUseCase.getPostsDTO(offset, limit, mode);
     }
 }

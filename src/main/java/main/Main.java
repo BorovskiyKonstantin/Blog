@@ -1,7 +1,10 @@
 package main;
 
+import main.domain.captchacode.entity.CaptchaCode;
+import main.domain.captchacode.usecase.CaptchaUseCase;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**ToDo:
  *      1. Подключить Hibernate

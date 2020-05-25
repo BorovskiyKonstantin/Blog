@@ -1,4 +1,4 @@
-package main.domain.user.model.auth.response;
+package main.domain.user.model.auth;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import main.domain.user.entity.User;

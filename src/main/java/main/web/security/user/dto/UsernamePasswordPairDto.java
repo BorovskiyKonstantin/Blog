@@ -1,4 +1,4 @@
-package main.security.user.dto;
+package main.web.security.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 

@@ -1,15 +1,16 @@
 package main.domain.post.model;
 
+//Информация о посте
 public class PostInfoDTO {
-    Integer id;
-    String time;
-    UserInfo user;
-    String title;
-    String announce;
-    Integer likeCount;
-    Integer dislikeCount;
-    Integer commentCount;
-    Integer viewCount;
+    private Integer id;
+    private String time;
+    private UserInfo user;
+    private String title;
+    private String announce;
+    private Integer likeCount;
+    private Integer dislikeCount;
+    private Integer commentCount;
+    private Integer viewCount;
 
     public PostInfoDTO(Integer id, String time, int userId, String userName, String title, String announce, Integer likeCount, Integer dislikeCount, Integer commentCount, Integer viewCount) {
         this.id = id;   //post-id
@@ -59,11 +60,10 @@ public class PostInfoDTO {
         return viewCount;
     }
 
-    //User info class
+    //Информация о юзере
     private class UserInfo {
         Integer id;
         String name;
-
 
         public UserInfo(int userId, String userName) {
             this.id = userId;

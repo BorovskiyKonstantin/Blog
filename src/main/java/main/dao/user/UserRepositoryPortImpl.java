@@ -38,4 +38,14 @@ public class UserRepositoryPortImpl implements UserRepositoryPort {
         return userRepository.findUserByEmail(email);
     }
 
+    @Override
+    public Optional<User> findUserByCode(String code) {
+        return userRepository.findUserByCode(code);
+    }
+
+    @Override
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
 }

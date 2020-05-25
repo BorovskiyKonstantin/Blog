@@ -1,5 +1,7 @@
 package main.domain.postvote.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -12,71 +14,24 @@ import java.sql.Timestamp;
  * ● time   DATETIME   NOT   NULL   -   дата   и   время  л айка   /   дизлайка
  * ● value   TINYINT   NOT   NULL   -   лайк   или   дизлайк:   1   или   -1
  */
-
+@Data
 @Entity
 @Table(name = "post_votes")
 public class PostVote {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @NotNull
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private int userId;
 
-    @NotNull
-    @Column(name = "post_id")
+    @Column(name = "post_id", nullable = false)
     private int postId;
 
-    @NotNull
-    @Column(name = "time")
+    @Column(name = "time", nullable = false)
     private Timestamp time;
 
-    @NotNull
-    @Column(name = "value", columnDefinition = "TINYINT")
+    @Column(name = "value", columnDefinition = "TINYINT", nullable = false)
     private boolean value;
-
-    //=============================================
-    //Getters And Setters
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public int getPostId() {
-        return postId;
-    }
-
-    public void setPostId(int postId) {
-        this.postId = postId;
-    }
-
-    public Timestamp getTime() {
-        return time;
-    }
-
-    public void setTime(Timestamp time) {
-        this.time = time;
-    }
-
-    public boolean isValue() {
-        return value;
-    }
-
-    public void setValue(boolean value) {
-        this.value = value;
-    }
 }

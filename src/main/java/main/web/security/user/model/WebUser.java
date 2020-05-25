@@ -1,4 +1,4 @@
-package main.security.user.model;
+package main.web.security.user.model;
 
 import main.domain.user.entity.User;
 import org.springframework.security.core.Authentication;
@@ -39,7 +39,7 @@ public class WebUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "{noop}" + password;
+        return password;
     }
 
     @Override

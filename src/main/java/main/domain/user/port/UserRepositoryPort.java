@@ -15,4 +15,10 @@ public interface UserRepositoryPort {
     Optional<User> findUserByName(String username);
 
     Optional<User> findUserByEmail(String email);
+
+    Optional<User> findUserByCode(String code);
+
+    void save(User user);
+
+
 }

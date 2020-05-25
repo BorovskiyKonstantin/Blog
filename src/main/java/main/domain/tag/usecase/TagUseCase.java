@@ -14,8 +14,10 @@ public class TagUseCase {
     TagRepositoryPort tagRepositoryPort;
 
     public List<Tag> getTags(String query){
-        List <Tag> tags = tagRepositoryPort.findAll();
+        return tagRepositoryPort.findAll();
+    }
 
-        return tags;
+    public void save(Tag tag){
+        tagRepositoryPort.save(tag);
     }
 }

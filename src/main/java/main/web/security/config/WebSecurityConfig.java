@@ -1,7 +1,6 @@
-package main.security.config;
+package main.web.security.config;
 
 import main.domain.user.usecase.UserUseCase;
-import main.security.user.model.WebUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +10,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -42,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/api/settings/*").authenticated()
                 .antMatchers("/**").permitAll()     //запросы без аутентификации
                 .and()
-                .addFilterBefore(myAuthenticationFilter(jsonResponseHandler), UsernamePasswordAuthenticationFilter.class)     //фильтр запросов
+                .addFilterBefore(AuthenticationFilter(jsonResponseHandler), UsernamePasswordAuthenticationFilter.class)     //фильтр запросов
                 .logout()
                 .logoutUrl("/api/auth/logout")
                 .logoutSuccessHandler(jsonResponseHandler)
@@ -61,9 +60,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public MyAuthenticationFilter myAuthenticationFilter(CustomAuthenticationHandler authHandler) throws Exception {
-        MyAuthenticationFilter authenticationFilter
-                = new MyAuthenticationFilter();
+    public AuthenticationFilter AuthenticationFilter(CustomAuthenticationHandler authHandler) throws Exception {
+        AuthenticationFilter authenticationFilter
+                = new AuthenticationFilter();
 
         authenticationFilter.setAuthenticationSuccessHandler(authHandler);
         authenticationFilter.setAuthenticationFailureHandler(authHandler);
@@ -73,19 +72,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return new MyUserDetailsService();
+    public PasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder(10);
     }
 
-    public class MyUserDetailsService implements UserDetailsService {
-
-        @Override
-        public UserDetails loadUserByUsername(final String email)
-                throws UsernameNotFoundException {
-            return userUseCase
-                    .getUserByEmail(email)
-                    .map(WebUser::new)
-                    .orElseThrow(() ->  new UsernameNotFoundException("User not found: " + email));
-        }
+    @Bean
+    public UserDetailsService userDetailsService(){
+        return new CustomUserDetailsService();
     }
+
+
 }

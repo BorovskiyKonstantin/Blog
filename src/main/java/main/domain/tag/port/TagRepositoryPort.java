@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface TagRepositoryPort {
     List<Tag> findAll();
+    void save(Tag tag);
 }

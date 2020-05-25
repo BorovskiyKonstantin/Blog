@@ -1,9 +1,9 @@
-package main.security.config;
+package main.web.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import main.domain.user.entity.User;
-import main.domain.user.model.auth.response.AuthResponseDTO;
-import main.security.user.model.WebUser;
+import main.domain.user.model.auth.AuthResponseDTO;
+import main.web.security.user.model.WebUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

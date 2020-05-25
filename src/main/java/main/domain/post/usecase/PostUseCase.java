@@ -2,7 +2,7 @@ package main.domain.post.usecase;
 
 import main.domain.post.entity.Post;
 import main.domain.post.model.PostInfoDTO;
-import main.domain.post.model.PostsDTO;
+import main.domain.post.model.PostRequestDTO;
 import main.domain.post.port.PostRepositoryPort;
 import main.domain.postcomments.port.PostCommentsRepositoryPort;
 import main.domain.postvote.port.PostVoteRepositoryPort;
@@ -32,7 +32,7 @@ public class PostUseCase {
     PostCommentsRepositoryPort postCommentsRepositoryPort;
 
 
-    public PostsDTO getPostsDTO(int offset, int limit, String mode) {
+    public PostRequestDTO getPostsDTO(int offset, int limit, String mode) {
         List<Post> posts = postRepositoryPort.getAllPosts(offset, limit, mode);
         //Список DTO c информацией постов
         List<PostInfoDTO> postInfoDTOList = new ArrayList<>();
@@ -49,10 +49,21 @@ public class PostUseCase {
             Integer commentCount = postCommentsRepositoryPort.getCommentCountByPostId(postId);
             Integer viewCount = post.getViewCount();
             //Заполнение DTO
-            postInfoDTOList.add(new PostInfoDTO(postId, time, userId, userName, title, announce, likeCount, dislikeCount, commentCount, viewCount));
+            postInfoDTOList.add(
+                    new PostInfoDTO(
+                            postId,
+                            time,
+                            userId,
+                            userName,
+                            title,
+                            announce,
+                            likeCount,
+                            dislikeCount,
+                            commentCount,
+                            viewCount));
         });
         //Общий DTO
-        return new PostsDTO(postRepositoryPort.count(), postInfoDTOList);
+        return new PostRequestDTO(postRepositoryPort.count(), postInfoDTOList);
     }
 
     private String postTimeToString(Timestamp postTime){

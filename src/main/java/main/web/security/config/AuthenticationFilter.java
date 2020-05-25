@@ -1,7 +1,7 @@
-package main.security.config;
+package main.web.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import main.security.user.dto.UsernamePasswordPairDto;
+import main.web.security.user.dto.UsernamePasswordPairDto;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -14,15 +14,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class MyAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final Log logger = LogFactory.getLog(MyAuthenticationFilter.class);
+    private static final Log logger = LogFactory.getLog(AuthenticationFilter.class);
 
     private static final String ERROR_MESSAGE = "Something went wrong while parsing /login request body";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public MyAuthenticationFilter() {
+    public AuthenticationFilter() {
     }
 
     @Override

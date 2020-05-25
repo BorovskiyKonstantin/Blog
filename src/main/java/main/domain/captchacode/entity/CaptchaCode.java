@@ -1,5 +1,7 @@
 package main.domain.captchacode.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -11,58 +13,22 @@ import java.sql.Timestamp;
  * ● code   TINYTEXT   NOT   NULL   -   код,   отображаемый   на   картинкке   капчи
  * ● secret_code   TINYTEXT   NOT   NULL   -   код,   передаваемый   в   параметре
  */
+
+@Data
 @Entity
 @Table(name = "captcha_codes")
 public class CaptchaCode {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @NotNull
-    @Column(name = "time")
+    @Column(name = "time", nullable = false)
     private Timestamp time;
 
-    @NotNull
-    @Column(name = "code", columnDefinition = "TINYTEXT")
+    @Column(name = "code", columnDefinition = "TINYTEXT", nullable = false)
     private String code;
 
-    @NotNull
-    @Column(name = "secret", columnDefinition = "TINYTEXT")
+    @Column(name = "secret_code", columnDefinition = "TINYTEXT", nullable = false)
     private String secretCode;
-
-    //=============================================
-    //Getters And Setters
-    
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Timestamp getTime() {
-        return time;
-    }
-
-    public void setTime(Timestamp time) {
-        this.time = time;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getSecretCode() {
-        return secretCode;
-    }
-
-    public void setSecretCode(String secretCode) {
-        this.secretCode = secretCode;
-    }
 }

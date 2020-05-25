@@ -1,5 +1,7 @@
 package main.domain.globalsetting.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -11,6 +13,7 @@ import javax.validation.constraints.NotNull;
  *       ● value   VARCHAR(255)   NOT   NULL   -   значение   настройки
  */
 
+@Data
 @Entity
 @Table(name = "global_settings")
 public class GlobalSetting {
@@ -19,50 +22,13 @@ public class GlobalSetting {
     @Column(name = "id")
     private int id;
 
-    @NotNull
-    @Column(name = "code")
+    @Column(name = "code", nullable = false)
     private String code;
 
-    @NotNull
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name = "value")
+    @Column(name = "value", nullable = false)
     private String value;
 
-    //=============================================
-    //Getters And Setters
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 }

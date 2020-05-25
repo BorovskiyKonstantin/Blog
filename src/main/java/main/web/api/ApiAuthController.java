@@ -1,30 +1,26 @@
 package main.web.api;
 
-//обрабатывает все запросы /api/auth/*
-
+import main.domain.captchacode.model.CaptchaCodeResponseDTO;
+import main.domain.captchacode.usecase.CaptchaUseCase;
 import main.domain.user.entity.User;
-import main.domain.user.model.auth.response.AuthResponseDTO;
+import main.domain.user.model.auth.AuthResponseDTO;
+import main.domain.user.model.register.RegisterRequestDTO;
+import main.domain.user.model.register.RegisterResponseDTO;
 import main.domain.user.usecase.UserUseCase;
-import main.security.user.model.WebUser;
+import main.web.security.user.model.WebUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * 1. +(заглушка) Вход   -   POST   /api/auth/login
- * 2. -(заглушка) Статус   авторизации   -   GET   /api/auth/check
+ * 1. + Вход   -   POST   /api/auth/login (осуществляется SpringSecurity)
+ * 2. + Статус   авторизации   -   GET   /api/auth/check
  * 3. ? Восстановление   пароля   -   POST   /api/auth/restore
  * 4. ? Изменение   пароля   -   POST   /api/auth/password
- * 5. ? Регистрация   -   POST   /api/auth/register
- * 6. ? Капча   -   GET   /api/auth/captcha
- * 7.   Выход   -   GET   /api/auth/logout
+ * 5. + Регистрация   -   POST   /api/auth/register
+ * 6. + Капча   -   GET   /api/auth/captcha
+ * 7. + Выход   -   GET   /api/auth/logout (осуществляется SpringSecurity)
  */
 
 @RestController
@@ -32,17 +28,29 @@ public class ApiAuthController {
     @Autowired
     UserUseCase userUseCase;
 
-    //    2. Статус   авторизации   -   GET   /api/auth/check
+    @Autowired
+    CaptchaUseCase captchaUseCase;
+
+    // 2. Статус   авторизации   -   GET   /api/auth/check
     @GetMapping(value = "/api/auth/check")
     public AuthResponseDTO authCheck(Authentication authentication) {
-        if (authentication == null) {
-            return AuthResponseDTO.failed();
-        }
-        else {
-            WebUser webUser = (WebUser) authentication.getPrincipal();
-            String email = webUser.getUsername();
-            User user = userUseCase.getUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
-            return AuthResponseDTO.successfulLogIn(user);
-        }
+        return userUseCase.authCheck(authentication);
+    }
+
+    // 5. Регистрация   -   POST   /api/auth/register
+    @PostMapping(value = "/api/auth/register")
+    public RegisterResponseDTO register(@RequestBody RegisterRequestDTO requestDTO) {
+        return userUseCase.registerUser(
+                requestDTO.getEmail(),
+                requestDTO.getName(),
+                requestDTO.getPassword(),
+                requestDTO.getCaptcha(),
+                requestDTO.getCaptchaSecret());
+    }
+
+    // 6. Капча   -   GET   /api/auth/captcha
+    @GetMapping(value = "/api/auth/captcha")
+    public CaptchaCodeResponseDTO generateCaptcha(){
+        return captchaUseCase.generateCaptcha();
     }
 }

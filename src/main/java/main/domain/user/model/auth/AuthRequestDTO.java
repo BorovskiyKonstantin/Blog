@@ -1,4 +1,4 @@
-package main.domain.user.model.auth.request;
+package main.domain.user.model.auth;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 

@@ -1,5 +1,6 @@
 package main.domain.post.entity;
 
+import lombok.Data;
 import main.domain.user.entity.User;
 
 import javax.persistence.*;
@@ -18,83 +19,38 @@ import java.sql.Timestamp;
  *       ● text   TEXT   NOT   NULL   -   текст   поста
  *       ● view_count   INT   NOT   NULL   -   количество   просмотров   поста
  * */
-@Entity(name = "posts")
+@Data
+@Entity
+@Table(name = "posts")
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @NotNull
-    @Column(name = "is_active",columnDefinition = "TINYINT")
+    @Column(name = "is_active",columnDefinition = "TINYINT", nullable = false)
     private boolean isActive;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "moderation_status", columnDefinition = "VARCHAR(255) default 'NEW'")
+    @Column(name = "moderation_status", columnDefinition = "VARCHAR(255) default 'NEW'", nullable = false)
     private ModerationStatus moderationStatus = ModerationStatus.NEW;
 
     @ManyToOne
     @JoinColumn(name = "moderator_id")
     private User moderator;
 
-    @NotNull
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private int userId;
 
-    @NotNull
-    @Column(name = "time")
+    @Column(name = "time", nullable = false)
     private Timestamp time;
 
-    @NotNull
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @NotNull
-    @Column(name = "text", columnDefinition = "TEXT")
+    @Column(name = "text", columnDefinition = "TEXT", nullable = false)
     private String text;
 
-    @NotNull
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false)
     private int viewCount;
-
-    //=============================================
-    //Getters And Setters
-
-
-    public int getId() {
-        return id;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public ModerationStatus getModerationStatus() {
-        return moderationStatus;
-    }
-
-    public User getModerator() {
-        return moderator;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public Timestamp getTime() {
-        return time;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public int getViewCount() {
-        return viewCount;
-    }
 }
