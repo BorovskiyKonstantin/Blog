@@ -36,6 +36,17 @@ public class AuthResponseDTO {
         private int moderationCount;
         private boolean settings;
 
+        //UserInfo constructor
+        private UserInfo(int id, String name, String photo, String email, boolean isModerator, int moderationCount, boolean settings) {
+            this.id = id;
+            this.name = name;
+            this.photo = photo;
+            this.email = email;
+            this.isModerator = isModerator;
+            this.moderationCount = moderationCount;
+            this.settings = settings;
+        }
+
         public int getId() {
             return id;
         }
@@ -63,35 +74,26 @@ public class AuthResponseDTO {
         public boolean isSettings() {
             return settings;
         }
-
-        private UserInfo(int id, String name, String photo, String email, boolean isModerator, int moderationCount, boolean settings) {
-            this.id = id;
-            this.name = name;
-            this.photo = photo;
-            this.email = email;
-            this.isModerator = isModerator;
-            this.moderationCount = moderationCount;
-            this.settings = settings;
-        }
     }
 
-    public static AuthResponseDTO failed(){
+    public static AuthResponseDTO failedDTO(){
         return new AuthResponseDTO(false);
     }
 
-    public static AuthResponseDTO successfulLogIn(User user){
-        int id = user.getId();
-        String name = user.getName();
-        String photo = user.getPhoto();
-        String email = user.getEmail();
-        boolean moderation = user.isModerator();
-        int moderationCount = user.getModeratedPosts().size();
-        boolean settings = user.isModerator();
-
-        return new AuthResponseDTO(true, id, name, photo, email, moderation, moderationCount, settings);
+    public static AuthResponseDTO successfulDTO(User user, int moderationCount){
+        return new AuthResponseDTO(
+                true,
+                user.getId(),
+                user.getName(),
+                user.getPhoto(),
+                user.getEmail(),
+                user.isModerator(),
+                moderationCount,
+                user.isModerator()  //settings
+        );
     }
 
-    public static AuthResponseDTO logOut(){
+    public static AuthResponseDTO logOutDTO(){
         return new AuthResponseDTO(true);
     }
 }

@@ -11,4 +11,6 @@ public interface PostRepositoryPort {
     long count();
 
     List<Post> getAllPosts(int offset, int limit, String mode);
+
+    List<Post> getNewPosts();
 }

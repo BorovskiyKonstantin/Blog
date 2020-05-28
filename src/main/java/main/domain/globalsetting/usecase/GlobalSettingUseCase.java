@@ -16,9 +16,9 @@ public class GlobalSettingUseCase {
         GlobalSetting postPremoderation = globalSettingRepositoryPort.findByCode("POST_PREMODERATION").orElseThrow();
         GlobalSetting statisticsInPublic = globalSettingRepositoryPort.findByCode("STATISTICS_IN_PUBLIC").orElseThrow();
 
-        multiuserMode.setValue(settingDto.isEnabledMultiuserMode() ? "YES" : "NO");
-        postPremoderation.setValue(settingDto.isEnabledPostPremoderation() ? "YES" : "NO");
-        statisticsInPublic.setValue(settingDto.isEnabledStatisticsInPublic() ? "YES" : "NO");
+        multiuserMode.setValue(settingDto.isMultiuserModeEnabled() ? "YES" : "NO");
+        postPremoderation.setValue(settingDto.isPostPremoderationEnabled() ? "YES" : "NO");
+        statisticsInPublic.setValue(settingDto.isStatisticsInPublicEnabled() ? "YES" : "NO");
 
         globalSettingRepositoryPort.save(multiuserMode);
         globalSettingRepositoryPort.save(postPremoderation);

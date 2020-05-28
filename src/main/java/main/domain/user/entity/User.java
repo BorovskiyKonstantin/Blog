@@ -48,7 +48,4 @@ public class User {
 
     @Column(name = "photo", columnDefinition = "TEXT")
     private String photo;
-
-    @OneToMany(mappedBy = "moderator", fetch = FetchType.EAGER)
-    private List<Post> moderatedPosts;
 }

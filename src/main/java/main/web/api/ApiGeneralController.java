@@ -26,7 +26,7 @@ import java.util.List;
  *   7. Редактирование   моего   профиля   -   POST   /api/profile/my
  *   8. Моя   статистика   -   GET   /api/statistics/my
  * ? 9. Статистика   по   всему   блогу   -   GET   /api/statistics/all
- * - 10. Получение   настроек   -   GET   /api/settings/ (доделать проверку авторизации и прав модерации)
+ * + 10. Получение   настроек   -   GET   /api/settings/
  * + 11. Сохранение   настроек   -   PUT   /api/settings/
  */
 
@@ -61,7 +61,6 @@ public class ApiGeneralController {
 
     //    10. Получение   настроек   -   GET   /api/settings/
     @GetMapping(value = "/api/settings")
-//    @Secured("ROLE_MODERATOR")
     public GlobalSettingDto getSettings() {
         return globalSettingUseCase.getSettings();
     }

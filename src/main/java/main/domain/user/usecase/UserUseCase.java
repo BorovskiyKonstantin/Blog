@@ -2,6 +2,8 @@ package main.domain.user.usecase;
 
 import main.domain.captchacode.entity.CaptchaCode;
 import main.domain.captchacode.port.CaptchaCodeRepositoryPort;
+import main.domain.post.entity.Post;
+import main.domain.post.port.PostRepositoryPort;
 import main.domain.user.entity.User;
 import main.domain.user.model.auth.AuthResponseDTO;
 import main.domain.user.model.changepass.ChangePassResponseDTO;
@@ -24,6 +26,9 @@ public class UserUseCase {
     UserRepositoryPort userRepositoryPort;
 
     @Autowired
+    PostRepositoryPort postRepositoryPort;
+
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -42,16 +47,14 @@ public class UserUseCase {
     }
 
     public RegisterResponseDTO registerUser(String email, String name, String password, String captcha, String captchaSecret) {
+        //Поиск ошибок
         Map<String, String> errors = new LinkedHashMap<>();
         if (userRepositoryPort.findUserByEmail(email).isPresent())
             errors.put("email", "Этот e-mail уже зарегистрирован");
-
         if (name == null || name.matches(".*\\d+.*"))
             errors.put("name", "Имя указано неверно");
-
         if (password.length() < 6)
             errors.put("password", "Пароль короче 6-ти символов");
-
         CaptchaCode captchaCode = captchaCodeRepositoryPort.findBySecretCode(captchaSecret).orElseThrow();
         if (!captchaCode.getCode().equals(captcha))
             errors.put("captcha", "Код картинки введен неверно");
@@ -60,6 +63,7 @@ public class UserUseCase {
         if (errors.size() != 0)
             return new RegisterResponseDTO(false, errors);
 
+        //Регистрация пользователя
         else {
             User user = new User();
             user.setEmail(email);
@@ -74,26 +78,33 @@ public class UserUseCase {
 
     public AuthResponseDTO authCheck(Authentication authentication) {
         if (authentication == null) {
-            return AuthResponseDTO.failed();
+            return AuthResponseDTO.failedDTO();
         } else {
             WebUser webUser = (WebUser) authentication.getPrincipal();
             String email = webUser.getUsername();
             User user = userRepositoryPort.findUserByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
-            return AuthResponseDTO.successfulLogIn(user);
+            return createSuccessfulAuthResponseDTO(user);
         }
     }
 
+    public AuthResponseDTO createSuccessfulAuthResponseDTO(User user){
+        int moderationCount = 0;
+        if (user.isModerator()){
+            List <Post> newPosts = postRepositoryPort.getNewPosts();
+            moderationCount = newPosts.size();
+        }
+        return AuthResponseDTO.successfulDTO(user, moderationCount);
+    }
 
     public ChangePassResponseDTO changePassword(String code, String password, String captcha, String captchaSecret) {
+        //Поиск ошибок
         Map<String, String> errors = new LinkedHashMap<>();
         User user = userRepositoryPort.findUserByCode(code).orElse(null);
         if (user == null)
             errors.put("code", "Ссылка   для   восстановления   пароля   устарела.   <a   href=”/auth/restore”>Запросить   ссылку   снова</a>");
-
         if (password.length() < 6)
             errors.put("password", "Пароль   короче   6-ти  с имволов");
-
         CaptchaCode captchaCode = captchaCodeRepositoryPort.findBySecretCode(captchaSecret).orElseThrow();
         if (!captchaCode.getCode().equals(captcha))
             errors.put("captcha", "Код с картинки введён неверно");
@@ -101,6 +112,8 @@ public class UserUseCase {
         //Формирование ответа при наличии ошибок
         if (errors.size() > 0)
             return new ChangePassResponseDTO(false, errors);
+
+        //Смена пароля
         else {
             user.setPassword(password);
             userRepositoryPort.save(user);
@@ -146,6 +159,7 @@ public class UserUseCase {
         //Response
         return new RestoreResponseDTO(true);
     }
+
     private String generateHash(int length) {
         final String symbols = "abcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder builder = new StringBuilder();

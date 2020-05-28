@@ -45,4 +45,9 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
         }
         throw new IllegalArgumentException("Illegal argument: mode");
     }
+
+    @Override
+    public List<Post> getNewPosts() {
+        return postRepository.getNewPosts("NEW");
+    }
 }

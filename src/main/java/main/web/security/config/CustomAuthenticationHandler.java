@@ -31,7 +31,7 @@ public class CustomAuthenticationHandler
     public void onAuthenticationFailure(HttpServletRequest request,
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException {
-        objectMapper.writeValue(response.getOutputStream(), AuthResponseDTO.failed());
+        objectMapper.writeValue(response.getOutputStream(), AuthResponseDTO.failedDTO());
     }
 
     @Override
@@ -39,18 +39,19 @@ public class CustomAuthenticationHandler
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         WebUser webUser = WebUser.fromAuth(authentication);
-
         User loggedInUser = userUseCase.getUserById(webUser.getId()).orElseThrow(
                 () -> new UsernameNotFoundException("User not found: " + webUser.getUsername())
         );
+        AuthResponseDTO responseDTO = userUseCase.createSuccessfulAuthResponseDTO(loggedInUser);
+        response.setContentType("application/json");
+        objectMapper.writeValue(response.getOutputStream(), responseDTO);
 
-        objectMapper.writeValue(response.getOutputStream(), AuthResponseDTO.successfulLogIn(loggedInUser));
     }
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request,
                                 HttpServletResponse response,
                                 Authentication authentication) throws IOException {
-        objectMapper.writeValue(response.getOutputStream(), AuthResponseDTO.logOut());
+        objectMapper.writeValue(response.getOutputStream(), AuthResponseDTO.logOutDTO());
     }
 }

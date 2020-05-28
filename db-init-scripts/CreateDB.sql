@@ -66,6 +66,7 @@ CREATE TABLE `post_comments` (
   `user_id` int NOT NULL,
   `post_id` int NOT NULL,
   `time` datetime NOT NULL,
+  `text` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_idx` (`user_id`),
   KEY `post_id fk_idx` (`post_id`),

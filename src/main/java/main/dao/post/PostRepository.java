@@ -30,4 +30,7 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     //early   -   сортировать   по   дате   публикации,   выводить   сначала   старые
     @Query(value = "SELECT * FROM posts p WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 ORDER BY p.time DESC limit ?3 offset ?2", nativeQuery = true)
     List<Post> getPostsEarlyMode(Timestamp currentTime, int offset, int limit);
+
+    @Query(value = "SELECT * FROM posts p WHERE p.moderation_status = ?1", nativeQuery = true)
+    List<Post> getNewPosts(String moderationStatus);
 }

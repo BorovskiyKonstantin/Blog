@@ -38,7 +38,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS,  "/api/auth/*").permitAll()    //запросы без аутентификации
                 .antMatchers(HttpMethod.POST).authenticated()   //все запросы POST проходят через аутентификацию
                 .antMatchers("/api/auth/login").not().fullyAuthenticated()
-//                .antMatchers("/api/settings/*").authenticated()
                 .antMatchers("/**").permitAll()     //запросы без аутентификации
                 .and()
                 .addFilterBefore(AuthenticationFilter(jsonResponseHandler), UsernamePasswordAuthenticationFilter.class)     //фильтр запросов

@@ -1,32 +1,35 @@
 package main.domain.globalsetting.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public class GlobalSettingDto {
-    @JsonProperty(value = "MULTIUSER_MODE")
+    @JsonProperty("MULTIUSER_MODE")
     private Boolean multiuserMode;
-    @JsonProperty(value = "POST_PREMODERATION")
-    private Boolean POST_PREMODERATION;
-    @JsonProperty(value = "STATISTICS_IN_PUBLIC")
-    private Boolean STATISTICS_IN_PUBLIC;
+    @JsonProperty("POST_PREMODERATION")
+    private Boolean postPremoderation;
+    @JsonProperty("STATISTICS_IN_PUBLIC")
+    private Boolean statisticsInPublic;
 
-    public GlobalSettingDto(boolean multiuserMode, boolean POST_PREMODERATION, boolean STATISTICS_IN_PUBLIC) {
+    public GlobalSettingDto(boolean multiuserMode, boolean postPremoderation, boolean statisticsInPublic) {
         this.multiuserMode = multiuserMode;
-        this.POST_PREMODERATION = POST_PREMODERATION;
-        this.STATISTICS_IN_PUBLIC = STATISTICS_IN_PUBLIC;
+        this.postPremoderation = postPremoderation;
+        this.statisticsInPublic = statisticsInPublic;
     }
 
-    public boolean isEnabledMultiuserMode() {
+    @JsonGetter("MULTIUSER_MODE")
+    public boolean isMultiuserModeEnabled() {
         return multiuserMode;
     }
 
-    public boolean isEnabledPostPremoderation() {
-        return POST_PREMODERATION;
+    @JsonGetter("POST_PREMODERATION")
+    public boolean isPostPremoderationEnabled() {
+        return postPremoderation;
     }
 
-    public boolean isEnabledStatisticsInPublic() {
-        return STATISTICS_IN_PUBLIC;
+    @JsonGetter("STATISTICS_IN_PUBLIC")
+    public boolean isStatisticsInPublicEnabled() {
+        return statisticsInPublic;
     }
-
-
 }
