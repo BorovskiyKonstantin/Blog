@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -20,27 +21,20 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public long count() {
-        return postRepository.count();
-    }
-
-    @Override
-    public List<Post> getAllPosts(int offset, int limit, String mode) {
+    public List<Post> getAllPosts(String mode) {
         Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
         switch (mode) {
             case "recent":
-                List<Post> list = postRepository.getPostsRecentMode(currentTime, offset, limit);
-                return list;
+                return postRepository.getPostsRecentMode(currentTime);
 
             case "popular":
-                list = postRepository.getPostsPopularMode(currentTime, offset, limit);
-                return list;
+                return postRepository.getPostsPopularMode(currentTime);
 
             case "best":
-                return postRepository.getPostsBestMode(currentTime, offset, limit);
+                return postRepository.getPostsBestMode(currentTime);
 
             case "early":
-                return postRepository.getPostsEarlyMode(currentTime, offset, limit);
+                return postRepository.getPostsEarlyMode(currentTime);
 
         }
         throw new IllegalArgumentException("Illegal argument: mode");
@@ -50,4 +44,11 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     public List<Post> getNewPosts() {
         return postRepository.getNewPosts("NEW");
     }
+
+    @Override
+    public List<Post> searchPosts(String query) {
+        Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
+        return postRepository.searchPosts(query, currentTime);
+    }
+
 }

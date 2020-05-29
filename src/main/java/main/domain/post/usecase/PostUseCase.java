@@ -32,8 +32,12 @@ public class PostUseCase {
     PostCommentsRepositoryPort postCommentsRepositoryPort;
 
 
-    public PostRequestDTO getPostsDTO(int offset, int limit, String mode) {
-        List<Post> posts = postRepositoryPort.getAllPosts(offset, limit, mode);
+    public PostRequestDTO getPosts(int offset, int limit, String mode) {
+        List<Post> posts = postRepositoryPort.getAllPosts(mode);
+        int count = posts.size();
+        //Offset and limit
+        posts = getWithOffsetAndLimit(posts, offset, limit);
+
         //Список DTO c информацией постов
         List<PostInfoDTO> postInfoDTOList = new ArrayList<>();
         posts.forEach(post -> {
@@ -63,7 +67,54 @@ public class PostUseCase {
                             viewCount));
         });
         //Общий DTO
-        return new PostRequestDTO(postRepositoryPort.count(), postInfoDTOList);
+        return new PostRequestDTO(count, postInfoDTOList);
+    }
+
+    public PostRequestDTO searchPosts(int offset, int limit, String query) {
+        List<Post> posts = postRepositoryPort.searchPosts(query);
+        int count = posts.size();
+        //Offset and limit
+        posts = getWithOffsetAndLimit(posts, offset, limit);
+
+        //Список DTO c информацией постов
+        List<PostInfoDTO> postInfoDTOList = new ArrayList<>();
+        posts.forEach(post -> {
+            Integer postId = post.getId();
+            String time = postTimeToString(post.getTime());
+            User user = userRepositoryPort.findById(post.getUserId()).orElseThrow();
+            Integer userId = user.getId();
+            String userName = user.getName();
+            String title = post.getTitle();
+            String announce = post.getText();
+            Integer likeCount = postVoteRepositoryPort.getLikeCountByPostId(postId);
+            Integer dislikeCount = postVoteRepositoryPort.getDislikeCountByPostId(postId);
+            Integer commentCount = postCommentsRepositoryPort.getCommentCountByPostId(postId);
+            Integer viewCount = post.getViewCount();
+            //Заполнение DTO
+            postInfoDTOList.add(
+                    new PostInfoDTO(
+                            postId,
+                            time,
+                            userId,
+                            userName,
+                            title,
+                            announce,
+                            likeCount,
+                            dislikeCount,
+                            commentCount,
+                            viewCount));
+        });
+        //Общий DTO
+        return new PostRequestDTO(count, postInfoDTOList);
+    }
+
+    private List<Post> getWithOffsetAndLimit(List<Post> posts, int offset, int limit){
+        if (offset > posts.size())
+            return new ArrayList<>();
+
+        int toIndex = Math.min((offset + limit), posts.size());
+        List <Post> subList = posts.subList(offset, toIndex);
+        return subList;
     }
 
     private String postTimeToString(Timestamp postTime){
@@ -87,5 +138,4 @@ public class PostUseCase {
         String time = String.format("%s, %02d:%02d", date, hour, minute);
         return time;
     }
-
 }

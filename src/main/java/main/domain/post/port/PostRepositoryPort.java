@@ -8,9 +8,9 @@ import java.util.List;
 public interface PostRepositoryPort {
     List<Post> findAll();
 
-    long count();
-
-    List<Post> getAllPosts(int offset, int limit, String mode);
+    List<Post> getAllPosts(String mode);
 
     List<Post> getNewPosts();
+
+    List<Post> searchPosts(String query);
 }

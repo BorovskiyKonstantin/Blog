@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * + 1. Список   постов   -  GET   /api/post/
- * - 2. Поиск   постов   -   GET   /api/post/search/
+ * + 2. Поиск   постов   -   GET   /api/post/search/
  * - 3. Получение   поста   -   GET   /api/post/ID
  * - 4. Список   постов   за   конкретную   дату   -   GET   /api/post/byDate
  * - 5. Список   постов   по   тэгу   -   GET   /api/post/byTag
@@ -32,6 +32,15 @@ public class ApiPostController {
     public PostRequestDTO getPosts(@RequestParam(name = "offset", defaultValue = "0") int offset,
                                    @RequestParam(name = "limit") int limit,
                                    @RequestParam(name = "mode") String mode) {
-        return postUseCase.getPostsDTO(offset, limit, mode);
+        return postUseCase.getPosts(offset, limit, mode);
     }
+
+//    2. Поиск   постов   -   GET   /api/post/search
+    @GetMapping(value = "/api/post/search")
+    public PostRequestDTO searchPosts (@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                       @RequestParam(name = "limit") int limit,
+                                       @RequestParam(name = "query") String query){
+        return postUseCase.searchPosts(offset, limit, query);
+    }
+
 }
