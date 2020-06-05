@@ -22,17 +22,18 @@ import java.util.*;
 
 @Component
 public class UserUseCase {
-    @Autowired
-    UserRepositoryPort userRepositoryPort;
+    private UserRepositoryPort userRepositoryPort;
+    private PostRepositoryPort postRepositoryPort;
+    private PasswordEncoder passwordEncoder;
+    private CaptchaCodeRepositoryPort captchaCodeRepositoryPort;
 
     @Autowired
-    PostRepositoryPort postRepositoryPort;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    CaptchaCodeRepositoryPort captchaCodeRepositoryPort;
+    public UserUseCase(UserRepositoryPort userRepositoryPort, PostRepositoryPort postRepositoryPort, PasswordEncoder passwordEncoder, CaptchaCodeRepositoryPort captchaCodeRepositoryPort) {
+        this.userRepositoryPort = userRepositoryPort;
+        this.postRepositoryPort = postRepositoryPort;
+        this.passwordEncoder = passwordEncoder;
+        this.captchaCodeRepositoryPort = captchaCodeRepositoryPort;
+    }
 
     public Optional<User> getUserByUsername(String username) {
         return userRepositoryPort.findUserByName(username);

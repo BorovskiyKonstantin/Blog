@@ -6,8 +6,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PostCommentsPortImpl implements PostCommentsRepositoryPort {
+    private PostCommentsRepository postCommentsRepository;
+
     @Autowired
-    PostCommentsRepository postCommentsRepository;
+    public PostCommentsPortImpl(PostCommentsRepository postCommentsRepository) {
+        this.postCommentsRepository = postCommentsRepository;
+    }
 
     @Override
     public Integer getCommentCountByPostId(int id) {

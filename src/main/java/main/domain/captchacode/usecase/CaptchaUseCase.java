@@ -10,18 +10,42 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Date;
+import java.util.Properties;
 import java.util.Random;
 
 @Component
 public class CaptchaUseCase {
+    private CaptchaCodeRepositoryPort captchaCodeRepositoryPort;
+    private long captchaDurationInMillis;
+
     @Autowired
-    CaptchaCodeRepositoryPort captchaCodeRepositoryPort;
+    public CaptchaUseCase(CaptchaCodeRepositoryPort captchaCodeRepositoryPort) {
+        this.captchaCodeRepositoryPort = captchaCodeRepositoryPort;
+        try {
+            Properties props = new Properties();
+            props.load(new FileInputStream(new File("application.yml")));
+            String CAPTCHA_DURATION_TIME = props.getProperty("CAPTCHA_DURATION_TIME");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
+            Date date = dateFormat.parse(CAPTCHA_DURATION_TIME);
+            this.captchaDurationInMillis = date.getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public CaptchaCodeResponseDTO generateCaptcha() {
-        CaptchaCode captcha = new CaptchaCode();
+        //TODO: delete old captcha
+        deleteOldCaptcha();
+
+
 
         //генерация code
         String code = generateCode(5);
@@ -31,20 +55,24 @@ public class CaptchaUseCase {
             secretCode = generateCode(12);
         } while (captchaCodeRepositoryPort.findBySecretCode(secretCode).isPresent());
 
-        Timestamp time = new Timestamp(System.currentTimeMillis());
+
 
         //сохранение captcha в бд
+        CaptchaCode captcha = new CaptchaCode();
         captcha.setCode(code);
         captcha.setSecretCode(secretCode);
-        captcha.setTime(time);
-
-        BufferedImage captchaImg = createCaptchaImage(code);
-        String encodedImg = "data:image/png;base64, " + encodeImage(captchaImg);
+        //Срок хранения капчи
+        Timestamp captchaDurationTime = new Timestamp(System.currentTimeMillis() + captchaDurationInMillis);
+        captcha.setTime(captchaDurationTime);
         captchaCodeRepositoryPort.save(captcha);
 
-        //TODO: delete old captcha
-        System.out.println(encodedImg);
-        deleteOldCaptcha();
+        //Создание картинки капчи
+        BufferedImage captchaImg = createCaptchaImage(code);
+
+
+
+        //Кодирование капчи
+        String encodedImg = "data:image/png;base64, " + encodeImage(captchaImg);
         return new CaptchaCodeResponseDTO(secretCode, encodedImg);
     }
 
@@ -52,6 +80,7 @@ public class CaptchaUseCase {
         /**
          * TODO: удаление капч
          */
+
     }
 
     private String generateCode(int length) {
@@ -80,8 +109,8 @@ public class CaptchaUseCase {
         for (int i = 0; i < code.length(); i++) {
             g.drawString(
                     String.valueOf(code.charAt(i)),
-                    2 + i * IMAGE_WIDTH/SYMBOLS_COUNT,
-                    IMAGE_HEIGHT - (IMAGE_HEIGHT-FONT_SIZE)/2
+                    2 + i * IMAGE_WIDTH / SYMBOLS_COUNT,
+                    IMAGE_HEIGHT - (IMAGE_HEIGHT - FONT_SIZE) / 2
             );
         }
         return image;

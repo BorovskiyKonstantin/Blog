@@ -8,8 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GlobalSettingUseCase {
+    private GlobalSettingRepositoryPort globalSettingRepositoryPort;
+
     @Autowired
-    GlobalSettingRepositoryPort globalSettingRepositoryPort;
+    public GlobalSettingUseCase(GlobalSettingRepositoryPort globalSettingRepositoryPort) {
+        this.globalSettingRepositoryPort = globalSettingRepositoryPort;
+    }
 
     public void editSettings(GlobalSettingDto settingDto) {
         GlobalSetting multiuserMode = globalSettingRepositoryPort.findByCode("MULTIUSER_MODE").orElseThrow();

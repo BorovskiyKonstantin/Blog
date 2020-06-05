@@ -12,8 +12,12 @@ import java.util.Optional;
 @Component
 public class GlobalSettingRepositoryPortImpl implements GlobalSettingRepositoryPort {
 
-    @Autowired
     private GlobalSettingRepository globalSettingRepository;
+
+    @Autowired
+    public GlobalSettingRepositoryPortImpl(GlobalSettingRepository globalSettingRepository) {
+        this.globalSettingRepository = globalSettingRepository;
+    }
 
     @Override
     public Optional<GlobalSetting> findByCode(String code) {

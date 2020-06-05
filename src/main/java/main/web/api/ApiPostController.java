@@ -24,10 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class ApiPostController {
-    @Autowired
-    PostUseCase postUseCase;
+    private PostUseCase postUseCase;
 
-//    1. Список   постов
+    @Autowired
+    public ApiPostController(PostUseCase postUseCase) {
+        this.postUseCase = postUseCase;
+    }
+
+    //    1. Список   постов
     @GetMapping(value = "/api/post")
     public PostRequestDTO getPosts(@RequestParam(name = "offset", defaultValue = "0") int offset,
                                    @RequestParam(name = "limit") int limit,

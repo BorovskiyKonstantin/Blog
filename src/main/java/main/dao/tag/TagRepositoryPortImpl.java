@@ -9,8 +9,12 @@ import java.util.List;
 
 @Component
 public class TagRepositoryPortImpl implements TagRepositoryPort {
-    @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    public TagRepositoryPortImpl(TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
+    }
 
     @Override
     public List<Tag> findAll() {

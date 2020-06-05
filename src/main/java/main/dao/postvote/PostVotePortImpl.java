@@ -6,8 +6,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PostVotePortImpl implements PostVoteRepositoryPort {
+    private PostVoteRepository postVoteRepository;
+
     @Autowired
-    PostVoteRepository postVoteRepository;
+    public PostVotePortImpl(PostVoteRepository postVoteRepository) {
+        this.postVoteRepository = postVoteRepository;
+    }
 
     @Override
     public Integer getLikeCountByPostId(int id) {

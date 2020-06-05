@@ -12,8 +12,12 @@ import java.util.List;
 
 @Component
 public class PostRepositoryPortImpl implements PostRepositoryPort {
+    private PostRepository postRepository;
+
     @Autowired
-    PostRepository postRepository;
+    public PostRepositoryPortImpl(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     @Override
     public List<Post> findAll() {

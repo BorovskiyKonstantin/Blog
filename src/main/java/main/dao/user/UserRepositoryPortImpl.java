@@ -10,8 +10,12 @@ import java.util.Optional;
 
 @Component
 public class UserRepositoryPortImpl implements UserRepositoryPort {
+    private UserRepository userRepository;
+
     @Autowired
-    UserRepository userRepository;
+    public UserRepositoryPortImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<User> findAll() {

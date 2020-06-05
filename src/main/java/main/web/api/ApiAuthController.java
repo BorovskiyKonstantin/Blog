@@ -29,11 +29,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ApiAuthController {
-    @Autowired
-    UserUseCase userUseCase;
+    private UserUseCase userUseCase;
+    private CaptchaUseCase captchaUseCase;
 
     @Autowired
-    CaptchaUseCase captchaUseCase;
+    public ApiAuthController(UserUseCase userUseCase, CaptchaUseCase captchaUseCase) {
+        this.userUseCase = userUseCase;
+        this.captchaUseCase = captchaUseCase;
+    }
 
     // 2. Статус   авторизации   -   GET   /api/auth/check
     @GetMapping(value = "/api/auth/check")

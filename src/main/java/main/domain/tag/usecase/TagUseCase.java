@@ -10,8 +10,12 @@ import java.util.List;
 
 @Component
 public class TagUseCase {
+    private TagRepositoryPort tagRepositoryPort;
+
     @Autowired
-    TagRepositoryPort tagRepositoryPort;
+    public TagUseCase(TagRepositoryPort tagRepositoryPort) {
+        this.tagRepositoryPort = tagRepositoryPort;
+    }
 
     public List<Tag> getTags(String query){
         return tagRepositoryPort.findAll();

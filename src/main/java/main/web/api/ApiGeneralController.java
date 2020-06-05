@@ -32,11 +32,14 @@ import java.util.List;
 
 @RestController
 public class ApiGeneralController {
-    @Autowired
-    GlobalSettingUseCase globalSettingUseCase;
-    @Autowired
-    TagUseCase tagUseCase;
+    private GlobalSettingUseCase globalSettingUseCase;
+    private TagUseCase tagUseCase;
 
+    @Autowired
+    public ApiGeneralController(GlobalSettingUseCase globalSettingUseCase, TagUseCase tagUseCase) {
+        this.globalSettingUseCase = globalSettingUseCase;
+        this.tagUseCase = tagUseCase;
+    }
 
     //    1. Общие   данные   блога   -   GET   /api/init
     @GetMapping(value = "/api/init")

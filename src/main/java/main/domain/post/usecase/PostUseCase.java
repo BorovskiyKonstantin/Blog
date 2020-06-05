@@ -19,18 +19,18 @@ import java.util.List;
 
 @Component
 public class PostUseCase {
-    @Autowired
-    PostRepositoryPort postRepositoryPort;
+    private PostRepositoryPort postRepositoryPort;
+    private UserRepositoryPort userRepositoryPort;
+    private PostVoteRepositoryPort postVoteRepositoryPort;
+    private PostCommentsRepositoryPort postCommentsRepositoryPort;
 
     @Autowired
-    UserRepositoryPort userRepositoryPort;
-
-    @Autowired
-    PostVoteRepositoryPort postVoteRepositoryPort;
-
-    @Autowired
-    PostCommentsRepositoryPort postCommentsRepositoryPort;
-
+    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostVoteRepositoryPort postVoteRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort) {
+        this.postRepositoryPort = postRepositoryPort;
+        this.userRepositoryPort = userRepositoryPort;
+        this.postVoteRepositoryPort = postVoteRepositoryPort;
+        this.postCommentsRepositoryPort = postCommentsRepositoryPort;
+    }
 
     public PostRequestDTO getPosts(int offset, int limit, String mode) {
         List<Post> posts = postRepositoryPort.getAllPosts(mode);
