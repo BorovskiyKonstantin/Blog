@@ -4,5 +4,11 @@ spring.datasource.password: test
 spring.jpa.database-platform: org.hibernate.dialect.MySQL8Dialect
 spring.jpa.hibernate.ddl-auto: update
 
+# инициализация базы данных из файлов .sql
+spring.datasource.initialization-mode: always
+spring.datasource.schema: classpath:database-init/schema.sql
+spring.datasource.data: classpath:database-init/TestData.sql
+
+# время хранения капч в БД
 captcha.duration: 1h
 
