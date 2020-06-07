@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS blog;
-CREATE DATABASE blog;
-use blog;
+--DROP DATABASE IF EXISTS blog;
+--CREATE DATABASE blog;
+--use blog;
 DROP TABLE IF EXISTS users, posts, post_votes,tags,tag2post,post_comments,captcha_codes,global_settings;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
