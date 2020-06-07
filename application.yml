@@ -1,4 +1,4 @@
-spring.datasource.url: jdbc:mysql://localhost:3306/blog?serverTimezone=Europe/Moscow
+spring.datasource.url: jdbc:mysql://localhost:3306/blog?serverTimezone=Europe/Moscow&createDatabaseIfNotExist=true
 spring.datasource.username: root
 spring.datasource.password: test
 spring.jpa.database-platform: org.hibernate.dialect.MySQL8Dialect
