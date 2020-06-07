@@ -4,6 +4,7 @@ import main.domain.captchacode.entity.CaptchaCode;
 import main.domain.captchacode.model.CaptchaCodeResponseDTO;
 import main.domain.captchacode.port.CaptchaCodeRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
@@ -14,8 +15,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Properties;
@@ -24,28 +25,17 @@ import java.util.Random;
 @Component
 public class CaptchaUseCase {
     private CaptchaCodeRepositoryPort captchaCodeRepositoryPort;
-    private long captchaDurationInMillis;
+    @Value("${captcha.duration}")
+    private Duration captchaDuration;
 
     @Autowired
     public CaptchaUseCase(CaptchaCodeRepositoryPort captchaCodeRepositoryPort) {
         this.captchaCodeRepositoryPort = captchaCodeRepositoryPort;
-        try {
-            Properties props = new Properties();
-            props.load(new FileInputStream(new File("application.yml")));
-            String CAPTCHA_DURATION_TIME = props.getProperty("CAPTCHA_DURATION_TIME");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-            Date date = dateFormat.parse(CAPTCHA_DURATION_TIME);
-            this.captchaDurationInMillis = date.getTime();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public CaptchaCodeResponseDTO generateCaptcha() {
-        //TODO: delete old captcha
+        //Удаление старых капч из БД
         deleteOldCaptcha();
-
-
 
         //генерация code
         String code = generateCode(5);
@@ -55,21 +45,18 @@ public class CaptchaUseCase {
             secretCode = generateCode(12);
         } while (captchaCodeRepositoryPort.findBySecretCode(secretCode).isPresent());
 
-
-
         //сохранение captcha в бд
         CaptchaCode captcha = new CaptchaCode();
         captcha.setCode(code);
         captcha.setSecretCode(secretCode);
-        //Срок хранения капчи
-        Timestamp captchaDurationTime = new Timestamp(System.currentTimeMillis() + captchaDurationInMillis);
+
+        //Дата и время генерации капчи
+        Timestamp captchaDurationTime = new Timestamp(System.currentTimeMillis());
         captcha.setTime(captchaDurationTime);
         captchaCodeRepositoryPort.save(captcha);
 
         //Создание картинки капчи
         BufferedImage captchaImg = createCaptchaImage(code);
-
-
 
         //Кодирование капчи
         String encodedImg = "data:image/png;base64, " + encodeImage(captchaImg);
@@ -77,10 +64,9 @@ public class CaptchaUseCase {
     }
 
     private void deleteOldCaptcha() {
-        /**
-         * TODO: удаление капч
-         */
-
+        //Время просроченных капч на данный момент
+        Timestamp expiredTime = new Timestamp(System.currentTimeMillis() - captchaDuration.toMillis());
+        captchaCodeRepositoryPort.deleteOld(expiredTime);
     }
 
     private String generateCode(int length) {

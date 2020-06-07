@@ -48,8 +48,8 @@ public class PostUseCase {
             String userName = user.getName();
             String title = post.getTitle();
             String announce = post.getText();
-            Integer likeCount = postVoteRepositoryPort.getLikeCountByPostId(postId);
-            Integer dislikeCount = postVoteRepositoryPort.getDislikeCountByPostId(postId);
+            Integer likeCount = post.getLikes().size();
+            Integer dislikeCount = post.getDislikes().size();
             Integer commentCount = postCommentsRepositoryPort.getCommentCountByPostId(postId);
             Integer viewCount = post.getViewCount();
             //Заполнение DTO

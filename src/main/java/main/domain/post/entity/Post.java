@@ -1,11 +1,14 @@
 package main.domain.post.entity;
 
 import lombok.Data;
+import main.domain.postvote.entity.PostVote;
 import main.domain.user.entity.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *      posts   -   посты
@@ -53,4 +56,18 @@ public class Post {
 
     @Column(name = "view_count", nullable = false)
     private int viewCount;
+
+    @OneToMany (mappedBy = "post")
+    private List<PostVote> postVotes;
+
+    public List<PostVote> getLikes(){
+        return postVotes.stream()
+                .filter(v -> v.isValue() == true)
+                .collect(Collectors.toList());
+    }
+    public List<PostVote> getDislikes(){
+        return postVotes.stream()
+                .filter(v -> v.isValue() == false)
+                .collect(Collectors.toList());
+    }
 }

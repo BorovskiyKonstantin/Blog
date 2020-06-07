@@ -18,8 +18,8 @@ public class CaptchaCodeRepositoryPortImpl implements CaptchaCodeRepositoryPort 
     }
 
     @Override
-    public void deleteOld(Timestamp currentTime, Timestamp captchaDurationTime) {
-        captchaCodeRepository.deleteOld(currentTime, captchaDurationTime);
+    public void deleteOld(Timestamp expiredTime) {
+        captchaCodeRepository.deleteOld(expiredTime);
     }
 
     @Override
@@ -29,7 +29,6 @@ public class CaptchaCodeRepositoryPortImpl implements CaptchaCodeRepositoryPort 
 
     @Override
     public void save(CaptchaCode captcha) {
-
         captchaCodeRepository.save(captcha);
     }
 }

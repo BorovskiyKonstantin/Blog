@@ -22,7 +22,7 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     List<Post> getPostsPopularMode(Timestamp currentTime);
 
     //best   -   сортировать   по   убыванию   количества   лайков
-    @Query(value = "SELECT * FROM posts p JOIN post_votes v ON p.id = v.post_id WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 AND p.is_active = 1 GROUP BY p.id ORDER BY sum(value = 1) DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM posts p LEFT JOIN post_votes v ON p.id = v.post_id WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 AND p.is_active = 1 GROUP BY p.id ORDER BY sum(value = 1) DESC", nativeQuery = true)
     List<Post> getPostsBestMode(Timestamp currentTime);
 
     //early   -   сортировать   по   дате   публикации,   выводить   сначала   старые

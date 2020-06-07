@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 import java.util.Optional;
 
 public interface CaptchaCodeRepositoryPort {
-    void deleteOld(Timestamp currentTime, Timestamp captchaDurationTime);
+    void deleteOld(Timestamp expiredTime);
     Optional<CaptchaCode> findBySecretCode(String secretCode);
     void save(CaptchaCode captcha);
 }

@@ -1,6 +1,10 @@
 package main.domain.postvote.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import main.domain.post.entity.Post;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -33,5 +37,10 @@ public class PostVote {
     private Timestamp time;
 
     @Column(name = "value", columnDefinition = "TINYINT", nullable = false)
+    @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean value;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id", insertable = false, updatable = false)
+    private Post post;
 }
