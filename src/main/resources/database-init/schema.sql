@@ -1,7 +1,6 @@
---DROP DATABASE IF EXISTS blog;
---CREATE DATABASE blog;
---use blog;
-DROP TABLE IF EXISTS users, posts, post_votes,tags,tag2post,post_comments,captcha_codes,global_settings;
+DROP DATABASE IF EXISTS blog;
+CREATE DATABASE blog;
+use blog;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `is_moderator` tinyint NOT NULL,
