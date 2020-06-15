@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class PostRepositoryPortImpl implements PostRepositoryPort {
@@ -53,6 +54,18 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     public List<Post> searchPosts(String query) {
         Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
         return postRepository.searchPosts(query, currentTime);
+    }
+
+    @Override
+    public Optional<Post> getPostById(Integer id) {
+        Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
+        return postRepository.getById(id, currentTime);
+    }
+
+    @Override
+    public List<Post> getPostsByDate(String date) {
+        Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
+        return postRepository.getPostsByDate(currentTime, date);
     }
 
 }

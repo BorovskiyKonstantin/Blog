@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends CrudRepository<Post, Integer> {
@@ -32,6 +33,12 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     @Query(value = "SELECT * FROM posts p WHERE p.moderation_status = ?1", nativeQuery = true)
     List<Post> getNewPosts(String moderationStatus);
 
-    @Query(value = "SELECT * FROM posts p WHERE p.title LIKE ?1% AND p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?2 AND p.is_active = 1 ORDER BY p.time", nativeQuery = true)
+    @Query(value = "SELECT * FROM posts p WHERE p.title LIKE %?1% AND p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?2 AND p.is_active = 1 ORDER BY p.time", nativeQuery = true)
     List<Post> searchPosts(String query, Timestamp currentTime);
+
+    @Query(value = "SELECT * FROM posts p WHERE p.id = ?1 AND p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?2 AND p.is_active = 1 ORDER BY p.time", nativeQuery = true)
+    Optional<Post> getById(int id, Timestamp currentTime);
+
+    @Query(value = "SELECT * FROM posts p WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 AND p.is_active = 1 AND cast(p.time as date) = ?2 ORDER BY p.time", nativeQuery = true)
+    List<Post> getPostsByDate(Timestamp currentTime, String date);
 }
