@@ -1,6 +1,8 @@
 package main.domain.postcomments.entity;
 
 import lombok.Data;
+import lombok.ToString;
+import main.domain.post.entity.Post;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,14 +19,14 @@ import java.sql.Timestamp;
 @Data
 @Entity
 @Table(name = "post_comments")
-public class PostComments {
+public class PostComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @Column(name = "parent_id", nullable = false)
-    private int parentId;
+    @Column(name = "parent_id")
+    private Integer parentId;
 
     @Column(name = "post_id", nullable = false)
     private int postId;
@@ -34,4 +36,12 @@ public class PostComments {
 
     @Column(name = "time", nullable = false)
     private Timestamp time;
+
+    @Column(name = "text", nullable = false)
+    private String text;
+
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", insertable = false, updatable = false)
+    private Post post;
 }
