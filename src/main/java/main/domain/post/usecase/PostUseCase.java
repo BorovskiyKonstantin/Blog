@@ -5,7 +5,7 @@ import main.domain.post.model.PostInfoDTO;
 import main.domain.post.model.PostRequestDTO;
 import main.domain.post.port.PostRepositoryPort;
 import main.domain.postcomments.entity.PostComment;
-import main.domain.postcomments.model.PostCommentDTO;
+import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.port.PostCommentsRepositoryPort;
 import main.domain.postvote.port.PostVoteRepositoryPort;
 import main.domain.tag.entity.Tag;
@@ -28,15 +28,13 @@ import java.util.stream.Collectors;
 public class PostUseCase {
     private PostRepositoryPort postRepositoryPort;
     private UserRepositoryPort userRepositoryPort;
-    private PostVoteRepositoryPort postVoteRepositoryPort;
     private PostCommentsRepositoryPort postCommentsRepositoryPort;
     private TagRepositoryPort tagRepositoryPort;
 
     @Autowired
-    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostVoteRepositoryPort postVoteRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort, TagRepositoryPort tagRepositoryPort) {
+    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort, TagRepositoryPort tagRepositoryPort) {
         this.postRepositoryPort = postRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
-        this.postVoteRepositoryPort = postVoteRepositoryPort;
         this.postCommentsRepositoryPort = postCommentsRepositoryPort;
         this.tagRepositoryPort = tagRepositoryPort;
     }
@@ -96,7 +94,7 @@ public class PostUseCase {
         List<Object> commentsDTO = new ArrayList<>();
         comments.forEach(postComment -> {
             User user = userRepositoryPort.findById(postComment.getUserId()).orElseThrow();
-            PostCommentDTO postCommentDTO = new PostCommentDTO(
+            CommentResponseDTO postCommentDTO = new CommentResponseDTO(
                     postComment.getId(),
                     postComment.getTime(),
                     postComment.getText(),
@@ -123,12 +121,7 @@ public class PostUseCase {
 
     //Получение списка с отступом и лимитом
     private List<Post> getWithOffsetAndLimit(List<Post> posts, int offset, int limit){
-        if (offset > posts.size())
-            return new ArrayList<>();
-
-        int toIndex = Math.min((offset + limit), posts.size());
-        List <Post> subList = posts.subList(offset, toIndex);
-        return subList;
+        return posts.stream().skip(offset).limit(limit).collect(Collectors.toList());
     }
 
     //Создание списка с DTO постов
