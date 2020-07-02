@@ -4,14 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import main.domain.globalsetting.model.GlobalSettingDto;
 import main.domain.globalsetting.usecase.GlobalSettingUseCase;
-import main.domain.post.usecase.PostUseCase;
+import main.domain.postcomments.model.CommentRequestDTO;
+import main.domain.postcomments.model.CommentResponseDTO;
+import main.domain.postcomments.service.PostCommentUseCase;
 import main.domain.tag.entity.Tag;
 import main.domain.tag.usecase.TagUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -34,11 +38,13 @@ import java.util.List;
 public class ApiGeneralController {
     private GlobalSettingUseCase globalSettingUseCase;
     private TagUseCase tagUseCase;
+    private PostCommentUseCase postCommentUseCase;
 
     @Autowired
-    public ApiGeneralController(GlobalSettingUseCase globalSettingUseCase, TagUseCase tagUseCase) {
+    public ApiGeneralController(GlobalSettingUseCase globalSettingUseCase, TagUseCase tagUseCase, PostCommentUseCase postCommentUseCase) {
         this.globalSettingUseCase = globalSettingUseCase;
         this.tagUseCase = tagUseCase;
+        this.postCommentUseCase = postCommentUseCase;
     }
 
     //    1. Общие   данные   блога   -   GET   /api/init
@@ -53,6 +59,17 @@ public class ApiGeneralController {
         blogInfoJson.put("copyright", "Дмитрий   Сергеев");
         blogInfoJson.put("copyrightFrom", "2005");
         return blogInfoJson;
+    }
+
+    //3. Отправка   комментария   к   посту   -   POST   /api/comment/
+    @PostMapping("/api/comment")
+    public ResponseEntity<CommentResponseDTO> comment(@RequestBody CommentRequestDTO commentRequestDTO){
+        try {
+            CommentResponseDTO postCommentDTO = postCommentUseCase.saveComment(commentRequestDTO);
+            return new ResponseEntity<>(postCommentDTO, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     //TODO: Заглушка для главной страницы! Реализовать в будущем

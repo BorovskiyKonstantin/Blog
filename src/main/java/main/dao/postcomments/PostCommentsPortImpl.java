@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class PostCommentsPortImpl implements PostCommentsRepositoryPort {
@@ -17,12 +18,17 @@ public class PostCommentsPortImpl implements PostCommentsRepositoryPort {
     }
 
     @Override
-    public Integer getCommentCountByPostId(int id) {
-        return postCommentsRepository.getCommentCountByPostId(id);
+    public List<PostComment> getCommentsByPostId(int id) {
+        return postCommentsRepository.findAllByPostId(id);
     }
 
     @Override
-    public List<PostComment> getCommentsByPostId(int id) {
-        return postCommentsRepository.findAllByPostId(id);
+    public void save(PostComment postComment) {
+        postCommentsRepository.save(postComment);
+    }
+
+    @Override
+    public Optional<PostComment> findCommentByIdForPostWithId(Integer commentId, Integer postId) {
+        return postCommentsRepository.findCommentByIdForPostWithId(commentId, postId);
     }
 }

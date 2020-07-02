@@ -2,6 +2,8 @@ use blog;
 
 insert into users (is_moderator, reg_time, name, email, password) values
 (true, "2020-01-01 00:00:00", "moderator", "moderator@example.ru", "$2y$10$NFGSDg6L7MKD9rpCO3EP3eldCQJcBqu5G9nK/lE.d6wYCGzoqTyDS"),
+(true, "2020-01-01 00:00:00", "moderator", "admin@example.ru", "$2y$10$hGifr7r4B2ewlBS22HJES.1DEEVeLc97tSBbLmsCALRmRGVCLJU1u"),
+(false, "2020-01-01 10:00:00", "user", "user@example.ru", "$2y$10$VsDP6gSp4Gx.H7CQt9Sm5Oo2uRSGBfCDlISGICd0w0A8LbVZ0YzHK"),
 (false, "2020-01-01 10:00:00", "user1", "user1@example.ru", "$2y$10$ORyttkIKKTx42qgIiCujGeGCHa0uDm.uI7s/d0O56DvLZ7S8/QOuS"),
 (false, "2020-01-02 10:00:00", "user2", "user2@example.ru", "$2y$10$a2yUJQnCBZMs9j2HkZKwTOrUqN0z6WsbmpWGeiYDyk8feQ8sbYdTq"),
 (false, "2020-01-03 10:00:00", "user3", "user3@example.ru", "$2y$10$1Uo2IXWo1ZZ.3sVaKRBPk.Q3sMPhGJBq4komDjmLfAEdYWhDfyihy");

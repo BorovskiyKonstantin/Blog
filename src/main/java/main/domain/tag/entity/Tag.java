@@ -1,6 +1,8 @@
 package main.domain.tag.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
+import lombok.ToString;
 import main.domain.post.entity.Post;
 
 import javax.persistence.*;
@@ -24,6 +26,8 @@ public class Tag {
     @Column(name = "name", nullable = false)
     private String name;
 
+//    @ToString.Exclude
+//    @JsonBackReference
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
     private List<Post> posts;
 }

@@ -69,8 +69,10 @@ CREATE TABLE `post_comments` (
   PRIMARY KEY (`id`),
   KEY `user_idx` (`user_id`),
   KEY `post_id fk_idx` (`post_id`),
+  KEY `parent_idfk_idx` (`parent_id`),
   CONSTRAINT `user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `post_id fk` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`)
+  CONSTRAINT `post_id fk` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`),
+  CONSTRAINT `parent_idfk` FOREIGN KEY (`parent_id`) REFERENCES `post_comments` (`id`)
 ) ENGINE=InnoDB ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `captcha_codes` (
