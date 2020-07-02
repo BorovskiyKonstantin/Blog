@@ -4,8 +4,12 @@ import main.domain.postcomments.entity.PostComment;
 
 import java.util.List;
 
-public interface PostCommentsRepositoryPort {
-    Integer getCommentCountByPostId(int id);
+import java.util.Optional;
 
+public interface PostCommentsRepositoryPort {
     List<PostComment> getCommentsByPostId(int id);
+
+    void save(PostComment postComment);
+
+    Optional<PostComment> findCommentByIdForPostWithId(Integer commentId, Integer postId);
 }

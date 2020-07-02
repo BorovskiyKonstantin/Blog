@@ -9,7 +9,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class DefaultController {
-    @RequestMapping("/")
+    @RequestMapping(value = {"/",
+            "/edit/*",
+            "/calendar/*",
+            "/my/*",
+            "/login",
+            "/login/*",
+            "/moderator/*",
+            "/moderation/*",
+            "/post/*",
+            "/posts/*",
+            "/profile",
+            "settings",
+            "/stat",
+            "/login/change-password/*",
+            "/404"})
     public String index(Model model){
         return "forward:/index.html";
     }

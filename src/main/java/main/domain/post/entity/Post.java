@@ -1,5 +1,6 @@
 package main.domain.post.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.ToString;
 import main.domain.postcomments.entity.PostComment;
@@ -65,7 +66,10 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<PostVote> postVotes;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
+//    @ToString.Exclude
+//    @JsonManagedReference
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "tag2post",
             joinColumns = {@JoinColumn(name = "post_id")},

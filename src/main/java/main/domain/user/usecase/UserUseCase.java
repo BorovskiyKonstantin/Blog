@@ -13,6 +13,7 @@ import main.domain.user.port.UserRepositoryPort;
 import main.web.security.user.model.WebUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -116,7 +117,7 @@ public class UserUseCase {
 
         //Смена пароля
         else {
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password));
             userRepositoryPort.save(user);
             return new ChangePassResponseDTO(true, null);
         }
@@ -161,6 +162,12 @@ public class UserUseCase {
         return new RestoreResponseDTO(true);
     }
 
+    public User getCurrentUser(){
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepositoryPort.findUserByEmail(userEmail).orElseThrow();
+        return currentUser;
+    }
+
     private String generateHash(int length) {
         final String symbols = "abcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder builder = new StringBuilder();
@@ -172,4 +179,5 @@ public class UserUseCase {
         }
         return builder.toString();
     }
+
 }
