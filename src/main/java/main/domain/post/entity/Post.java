@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.ToString;
 import main.domain.postcomments.entity.PostComment;
 import main.domain.postvote.entity.PostVote;
+import main.domain.postvote.entity.PostVoteType;
 import main.domain.tag.entity.Tag;
 import main.domain.user.entity.User;
 
@@ -66,9 +67,6 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<PostVote> postVotes;
 
-
-//    @ToString.Exclude
-//    @JsonManagedReference
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "tag2post",
@@ -79,13 +77,13 @@ public class Post {
 
     public List<PostVote> getLikes() {
         return postVotes.stream()
-                .filter(v -> v.isValue() == true)
+                .filter(v -> v.getValue() == PostVoteType.LIKE)
                 .collect(Collectors.toList());
     }
 
     public List<PostVote> getDislikes() {
         return postVotes.stream()
-                .filter(v -> v.isValue() == false)
+                .filter(v -> v.getValue() == PostVoteType.DISLIKE)
                 .collect(Collectors.toList());
     }
 }

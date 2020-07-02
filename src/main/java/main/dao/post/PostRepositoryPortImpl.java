@@ -1,5 +1,6 @@
 package main.dao.post;
 
+import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.post.port.PostRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,8 +46,8 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public List<Post> getNewPosts() {
-        return postRepository.getNewPosts("NEW");
+    public List<Post> getByModerationStatus(ModerationStatus moderationStatus) {
+        return postRepository.getByModerationStatus(moderationStatus);
     }
 
     @Override

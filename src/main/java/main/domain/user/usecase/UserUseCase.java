@@ -2,6 +2,7 @@ package main.domain.user.usecase;
 
 import main.domain.captchacode.entity.CaptchaCode;
 import main.domain.captchacode.port.CaptchaCodeRepositoryPort;
+import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.post.port.PostRepositoryPort;
 import main.domain.user.entity.User;
@@ -93,7 +94,7 @@ public class UserUseCase {
     public AuthResponseDTO createSuccessfulAuthResponseDTO(User user){
         int moderationCount = 0;
         if (user.isModerator()){
-            List <Post> newPosts = postRepositoryPort.getNewPosts();
+            List <Post> newPosts = postRepositoryPort.getByModerationStatus(ModerationStatus.NEW);
             moderationCount = newPosts.size();
         }
         return AuthResponseDTO.successfulDTO(user, moderationCount);

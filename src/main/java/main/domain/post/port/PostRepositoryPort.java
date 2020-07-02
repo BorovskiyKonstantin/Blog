@@ -1,5 +1,6 @@
 package main.domain.post.port;
 
+import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.post.model.PostInfoDTO;
 import main.domain.post.model.PostRequestDTO;
@@ -12,7 +13,7 @@ public interface PostRepositoryPort {
 
     List<Post> getAllPosts(String mode);
 
-    List<Post> getNewPosts();
+    List<Post> getByModerationStatus(ModerationStatus moderationStatus);
 
     List<Post> searchPosts(String query);
 
