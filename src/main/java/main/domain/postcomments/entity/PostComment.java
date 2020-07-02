@@ -1,7 +1,7 @@
 package main.domain.postcomments.entity;
 
 import lombok.Data;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 import main.domain.post.entity.Post;
 
 import javax.persistence.*;
@@ -18,6 +18,7 @@ import java.sql.Timestamp;
  */
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "post_comments")
 public class PostComment {
     @Id
@@ -40,7 +41,14 @@ public class PostComment {
     @Column(name = "text", nullable = false)
     private String text;
 
-//    @ToString.Exclude
+    public PostComment(Integer parentId, int postId, int userId, Timestamp time, String text) {
+        this.parentId = parentId;
+        this.postId = postId;
+        this.userId = userId;
+        this.time = time;
+        this.text = text;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", insertable = false, updatable = false)
     private Post post;
