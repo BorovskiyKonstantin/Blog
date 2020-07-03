@@ -9,12 +9,19 @@ import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.service.PostCommentUseCase;
 import main.domain.tag.entity.Tag;
 import main.domain.tag.usecase.TagUseCase;
+import main.domain.user.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -22,7 +29,7 @@ import java.util.List;
  * для прочих запросов к API
  * <p>
  * + 1. Общие   данные   блога   -   GET   /api/init
- *   2. Загрузка   изображений   -   POST   /api/image
+ * + 2. Загрузка   изображений   -   POST   /api/image
  * + 3. Отправка   комментария   к   посту   -   POST   /api/comment/
  * - (заглушка) 4. Получение   списка   тэгов   -   GET   /api/tag/ (!!!!!!!!!!Нужны изеры и посты для тестирования)
  *   5. Модерация   поста   -   POST   /api/moderation
@@ -39,12 +46,14 @@ public class ApiGeneralController {
     private GlobalSettingUseCase globalSettingUseCase;
     private TagUseCase tagUseCase;
     private PostCommentUseCase postCommentUseCase;
+    private ImageService imageService;
 
     @Autowired
-    public ApiGeneralController(GlobalSettingUseCase globalSettingUseCase, TagUseCase tagUseCase, PostCommentUseCase postCommentUseCase) {
+    public ApiGeneralController(GlobalSettingUseCase globalSettingUseCase, TagUseCase tagUseCase, PostCommentUseCase postCommentUseCase, ImageService imageService) {
         this.globalSettingUseCase = globalSettingUseCase;
         this.tagUseCase = tagUseCase;
         this.postCommentUseCase = postCommentUseCase;
+        this.imageService = imageService;
     }
 
     //    1. Общие   данные   блога   -   GET   /api/init
@@ -59,6 +68,12 @@ public class ApiGeneralController {
         blogInfoJson.put("copyright", "Дмитрий   Сергеев");
         blogInfoJson.put("copyrightFrom", "2005");
         return blogInfoJson;
+    }
+
+    //2. Загрузка   изображений   -   POST   /api/image
+    @PostMapping(value = "/api/image", produces = "text/plain")
+    public String uploadImage(@RequestParam("image")MultipartFile image){
+        return imageService.uploadImage(image);
     }
 
     //3. Отправка   комментария   к   посту   -   POST   /api/comment/

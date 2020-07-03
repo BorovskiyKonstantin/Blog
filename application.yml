@@ -13,3 +13,5 @@ spring.datasource.data: classpath:database-init/TestData.sql
 # время хранения капч в БД
 captcha.duration: 1h
 
+upload.dir: src\main\resources\upload\
+
