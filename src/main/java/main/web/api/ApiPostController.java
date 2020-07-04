@@ -67,5 +67,4 @@ public class ApiPostController {
                                          @RequestParam(name = "tag") String tag){
         return postUseCase.getPostsByTag(offset, limit, tag);
     }
-
 }

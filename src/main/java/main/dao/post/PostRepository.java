@@ -52,4 +52,5 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "t.name = %:tag%\n" +
             "AND " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
     List<Post> getPostsByTag(@Param("tag") String tag);
+
 }
