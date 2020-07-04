@@ -20,4 +20,6 @@ public interface PostRepositoryPort {
     Optional<Post> getPostById(Integer id);
 
     List<Post> getPostsByDate(String date);
+
+    List<Post> getPostsByTag(String tag);
 }

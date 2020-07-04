@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * + 2. Поиск   постов   -   GET   /api/post/search/
  * + 3. Получение   поста   -   GET   /api/post/ID
  * + 4. Список   постов   за   конкретную   дату   -   GET   /api/post/byDate
- * - 5. Список   постов   по   тэгу   -   GET   /api/post/byTag
+ * + 5. Список   постов   по   тэгу   -   GET   /api/post/byTag
  * 6. Список   постов   на   модерацию   -   GET   /api/post/moderation
  * 7. Список   моих   постов   -   GET   /api/post/my
  * 8. Добавление   поста   -   POST   /api/post
@@ -59,5 +59,13 @@ public class ApiPostController {
                                          @RequestParam(name = "limit") int limit,
                                          @RequestParam(name = "date") String date){
         return postUseCase.getPostsByDate(offset, limit, date);
+    }
+
+//    5. Список   постов   по   тэгу   -   GET   /api/post/byTag
+    @GetMapping(value = "/api/post/byTag")
+    public PostRequestDTO getPostsByTag(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                        @RequestParam(name = "limit") int limit,
+                                        @RequestParam(name = "tag") String tag){
+        return postUseCase.getPostsByTag(offset, limit, tag);
     }
 }
