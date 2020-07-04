@@ -60,4 +60,12 @@ public class ApiPostController {
                                          @RequestParam(name = "date") String date){
         return postUseCase.getPostsByDate(offset, limit, date);
     }
+
+//    5. Список   постов   по   тэгу   -   GET   /api/post/byTag
+    @GetMapping(value = "/api/post/byTag")
+    public PostRequestDTO getPostsByTag(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                        @RequestParam(name = "limit") int limit,
+                                        @RequestParam(name = "tag") String tag){
+        return postUseCase.getPostsByTag(offset, limit, tag);
+    }
 }

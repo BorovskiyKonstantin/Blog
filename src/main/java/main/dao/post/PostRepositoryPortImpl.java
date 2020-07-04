@@ -68,4 +68,10 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
         return postRepository.getPostsByDate(currentTime, date);
     }
 
+    @Override
+    public List<Post> getPostsByTag(String tag) {
+        Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
+        return postRepository.getPostsByTag(tag, currentTime);
+    }
+
 }

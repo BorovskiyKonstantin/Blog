@@ -42,4 +42,11 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
 
     @Query(value = "SELECT * FROM posts p WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 AND p.is_active = 1 AND cast(p.time as date) = ?2 ORDER BY p.time", nativeQuery = true)
     List<Post> getPostsByDate(Timestamp currentTime, String date);
+
+    @Query(value = "SELECT * FROM posts p\n" +
+            "JOIN tag2post tp ON p.id = tp.post_id\n" +
+            "JOIN tags t ON t.id = tp.tag_id\n" +
+            "WHERE t.name = ?1\n" +
+            "AND p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?2 AND p.is_active = 1 ORDER BY p.time", nativeQuery = true)
+    List<Post> getPostsByTag(String tag, Timestamp currentTime);
 }

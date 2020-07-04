@@ -118,6 +118,13 @@ public class PostUseCase {
         return postInfoDTO;
     }
 
+    public PostRequestDTO getPostsByTag(int offset, int limit, String tag) {
+        List<Post> posts = postRepositoryPort.getPostsByTag(tag);
+        int count = posts.size();
+        posts = getWithOffsetAndLimit(posts, offset, limit);
+        List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
+        return new PostRequestDTO(count, postInfoDTOList);
+    }
 
     //Получение списка с отступом и лимитом
     private List<Post> getWithOffsetAndLimit(List<Post> posts, int offset, int limit){
