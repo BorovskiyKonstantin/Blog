@@ -1,6 +1,5 @@
-package main.domain.postcomments.service;
+package main.domain.postcomments.usecase;
 
-import main.domain.post.entity.Post;
 import main.domain.post.port.PostRepositoryPort;
 import main.domain.postcomments.entity.PostComment;
 import main.domain.postcomments.model.CommentRequestDTO;
@@ -9,12 +8,14 @@ import main.domain.postcomments.port.PostCommentsRepositoryPort;
 import main.domain.user.usecase.UserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Service
+@Transactional
 public class PostCommentUseCase {
     private PostCommentsRepositoryPort postCommentsRepositoryPort;
     private UserUseCase userUseCase;

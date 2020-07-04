@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
+@RequestMapping("/api/auth")
 public class ApiAuthController {
     private UserUseCase userUseCase;
     private CaptchaUseCase captchaUseCase;
@@ -39,19 +40,19 @@ public class ApiAuthController {
     }
 
     // 2. Статус   авторизации   -   GET   /api/auth/check
-    @GetMapping(value = "/api/auth/check")
+    @GetMapping(value = "/check")
     public AuthResponseDTO authCheck(Authentication authentication) {
         return userUseCase.authCheck(authentication);
     }
 
     // 3. Восстановление   пароля   -   POST   /api/auth/restore
-    @PostMapping(value = "/api/auth/restore")
+    @PostMapping(value = "/restore")
     public RestoreResponseDTO restorePassword(@RequestBody RestoreRequestDTO requestDTO){
         return userUseCase.restorePassword(requestDTO.getEmail());
     }
 
     // 4. Изменение   пароля   -   POST   /api/auth/password
-    @PostMapping(value = "/api/auth/password")
+    @PostMapping(value = "/password")
     public ChangePassResponseDTO changePassword(@RequestBody ChangePassRequestDTO requestDTO){
         return userUseCase.changePassword(
                 requestDTO.getCode(),
@@ -61,7 +62,7 @@ public class ApiAuthController {
     }
 
     // 5. Регистрация   -   POST   /api/auth/register
-    @PostMapping(value = "/api/auth/register")
+    @PostMapping(value = "/register")
     public RegisterResponseDTO register(@RequestBody RegisterRequestDTO requestDTO) {
         return userUseCase.registerUser(
                 requestDTO.getEmail(),
@@ -72,7 +73,7 @@ public class ApiAuthController {
     }
 
     // 6. Капча   -   GET   /api/auth/captcha
-    @GetMapping(value = "/api/auth/captcha")
+    @GetMapping(value = "/captcha")
     public CaptchaCodeResponseDTO generateCaptcha(){
         return captchaUseCase.generateCaptcha();
     }

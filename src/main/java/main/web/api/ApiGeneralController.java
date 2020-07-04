@@ -6,23 +6,17 @@ import main.domain.globalsetting.model.GlobalSettingDto;
 import main.domain.globalsetting.usecase.GlobalSettingUseCase;
 import main.domain.postcomments.model.CommentRequestDTO;
 import main.domain.postcomments.model.CommentResponseDTO;
-import main.domain.postcomments.service.PostCommentUseCase;
+import main.domain.postcomments.usecase.PostCommentUseCase;
 import main.domain.tag.entity.Tag;
 import main.domain.tag.usecase.TagUseCase;
 import main.domain.user.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -42,6 +36,7 @@ import java.util.List;
  */
 
 @RestController
+@RequestMapping("/api")
 public class ApiGeneralController {
     private GlobalSettingUseCase globalSettingUseCase;
     private TagUseCase tagUseCase;
@@ -57,7 +52,7 @@ public class ApiGeneralController {
     }
 
     //    1. Общие   данные   блога   -   GET   /api/init
-    @GetMapping(value = "/api/init")
+    @GetMapping(value = "/init")
     public ObjectNode getBlogInfo() {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode blogInfoJson = objectMapper.createObjectNode();
@@ -71,13 +66,13 @@ public class ApiGeneralController {
     }
 
     //2. Загрузка   изображений   -   POST   /api/image
-    @PostMapping(value = "/api/image", produces = "text/plain")
+    @PostMapping(value = "/image", produces = "text/plain")
     public String uploadImage(@RequestParam("image")MultipartFile image){
         return imageService.uploadImage(image);
     }
 
     //3. Отправка   комментария   к   посту   -   POST   /api/comment/
-    @PostMapping("/api/comment")
+    @PostMapping("/comment")
     public ResponseEntity<CommentResponseDTO> comment(@RequestBody CommentRequestDTO commentRequestDTO){
         try {
             CommentResponseDTO postCommentDTO = postCommentUseCase.saveComment(commentRequestDTO);
@@ -89,19 +84,19 @@ public class ApiGeneralController {
 
     //TODO: Заглушка для главной страницы! Реализовать в будущем
     //4. Получение   списка   тэгов   -   GET   /api/tag/
-    @GetMapping(value = "/api/tag")
+    @GetMapping(value = "/tag")
     public List<Tag> getTags(@RequestParam(name = "query", required = false) String query){
         return tagUseCase.getTags(query);
     }
 
     //    10. Получение   настроек   -   GET   /api/settings/
-    @GetMapping(value = "/api/settings")
+    @GetMapping(value = "/settings")
     public GlobalSettingDto getSettings() {
         return globalSettingUseCase.getSettings();
     }
 
     //    11. Сохранение   настроек
-    @PutMapping(value = "/api/settings")
+    @PutMapping(value = "/settings")
     @Secured("ROLE_MODERATOR")
     public void putSettings(@RequestBody GlobalSettingDto settingEditDto) {
         globalSettingUseCase.editSettings(settingEditDto);

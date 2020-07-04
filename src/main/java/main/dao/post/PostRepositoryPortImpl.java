@@ -27,19 +27,18 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
 
     @Override
     public List<Post> getAllPosts(String mode) {
-        Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
         switch (mode) {
             case "recent":
-                return postRepository.getPostsRecentMode(currentTime);
+                return postRepository.getPostsRecentMode();
 
             case "popular":
-                return postRepository.getPostsPopularMode(currentTime);
+                return postRepository.getPostsPopularMode();
 
             case "best":
-                return postRepository.getPostsBestMode(currentTime);
+                return postRepository.getPostsBestMode();
 
             case "early":
-                return postRepository.getPostsEarlyMode(currentTime);
+                return postRepository.getPostsEarlyMode();
 
         }
         throw new IllegalArgumentException("Illegal argument: mode");
@@ -52,26 +51,22 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
 
     @Override
     public List<Post> searchPosts(String query) {
-        Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
-        return postRepository.searchPosts(query, currentTime);
+        return postRepository.searchPosts(query);
     }
 
     @Override
     public Optional<Post> getPostById(Integer id) {
-        Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
-        return postRepository.getById(id, currentTime);
+        return postRepository.getById(id);
     }
 
     @Override
     public List<Post> getPostsByDate(String date) {
-        Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
-        return postRepository.getPostsByDate(currentTime, date);
+        return postRepository.getPostsByDate(date);
     }
 
     @Override
     public List<Post> getPostsByTag(String tag) {
-        Timestamp currentTime = Timestamp.valueOf(LocalDateTime.now());
-        return postRepository.getPostsByTag(tag, currentTime);
+        return postRepository.getPostsByTag(tag);
     }
 
 }

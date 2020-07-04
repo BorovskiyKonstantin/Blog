@@ -2,8 +2,6 @@ package main.domain.post.port;
 
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
-import main.domain.post.model.PostInfoDTO;
-import main.domain.post.model.PostRequestDTO;
 
 import java.util.List;
 import java.util.Optional;

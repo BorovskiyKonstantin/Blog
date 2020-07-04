@@ -2,12 +2,11 @@ package main.domain.post.usecase;
 
 import main.domain.post.entity.Post;
 import main.domain.post.model.PostInfoDTO;
-import main.domain.post.model.PostRequestDTO;
+import main.domain.post.model.PostResponceDTO;
 import main.domain.post.port.PostRepositoryPort;
 import main.domain.postcomments.entity.PostComment;
 import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.port.PostCommentsRepositoryPort;
-import main.domain.postvote.port.PostVoteRepositoryPort;
 import main.domain.tag.entity.Tag;
 import main.domain.tag.port.TagRepositoryPort;
 import main.domain.user.entity.User;
@@ -15,6 +14,8 @@ import main.domain.user.port.UserRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
@@ -25,58 +26,42 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Transactional
 public class PostUseCase {
     private PostRepositoryPort postRepositoryPort;
     private UserRepositoryPort userRepositoryPort;
     private PostCommentsRepositoryPort postCommentsRepositoryPort;
-    private TagRepositoryPort tagRepositoryPort;
 
     @Autowired
-    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort, TagRepositoryPort tagRepositoryPort) {
+    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort) {
         this.postRepositoryPort = postRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
-        this.postCommentsRepositoryPort = postCommentsRepositoryPort;
-        this.tagRepositoryPort = tagRepositoryPort;
+        this.postCommentsRepositoryPort = postCommentsRepositoryPort;;
     }
 
 
-    public PostRequestDTO getPosts(int offset, int limit, String mode) {
+    public PostResponceDTO getPosts(int offset, int limit, String mode) {
         List<Post> posts = postRepositoryPort.getAllPosts(mode);
         int count = posts.size();
-        //Offset and limit
         posts = getWithOffsetAndLimit(posts, offset, limit);
-
-        //Список DTO c информацией постов
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-
-        //Общий DTO
-        return new PostRequestDTO(count, postInfoDTOList);
+        return new PostResponceDTO(count, postInfoDTOList);
     }
 
-    public PostRequestDTO searchPosts(int offset, int limit, String query) {
+    public PostResponceDTO searchPosts(int offset, int limit, String query) {
         List<Post> posts = postRepositoryPort.searchPosts(query);
         int count = posts.size();
-        //Offset and limit
         posts = getWithOffsetAndLimit(posts, offset, limit);
-
-        //Список DTO c информацией постов
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-
-        //Общий DTO
-        return new PostRequestDTO(count, postInfoDTOList);
+        return new PostResponceDTO(count, postInfoDTOList);
     }
 
-    public PostRequestDTO getPostsByDate(int offset, int limit, String date) {
+    public PostResponceDTO getPostsByDate(int offset, int limit, String date) {
         List<Post> posts = postRepositoryPort.getPostsByDate(date);
         int count = posts.size();
-        //Offset and limit
         posts = getWithOffsetAndLimit(posts, offset, limit);
-
-        //Список DTO c информацией постов
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-
-        //Общий DTO
-        return new PostRequestDTO(count, postInfoDTOList);
+        return new PostResponceDTO(count, postInfoDTOList);
     }
 
     public PostInfoDTO getPostById(Integer id){
@@ -90,7 +75,7 @@ public class PostUseCase {
         //Получение комментариев к посту
         List<PostComment> comments = postCommentsRepositoryPort.getCommentsByPostId(post.getId());
 
-        //Создание DTO комментариев
+        //Создание списка DTO комментариев
         List<Object> commentsDTO = new ArrayList<>();
         comments.forEach(postComment -> {
             User user = userRepositoryPort.findById(postComment.getUserId()).orElseThrow();
@@ -105,25 +90,20 @@ public class PostUseCase {
             commentsDTO.add(postCommentDTO);
         });
 
-        //Добавление комментариев к DTO поста
-        postInfoDTO.setComments(commentsDTO);
-
-        //Получение тэгов к посту
-        List<Tag> tags = post.getTags();
+        postInfoDTO.setComments(commentsDTO);   //Добавление списка DTO комментариев к DTO поста
+        List<Tag> tags = post.getTags();    //Получение тэгов к посту
         List<String> tagNames = tags.stream().map(Tag::getName).collect(Collectors.toList());
-
-        //Добавление тэгов к DTO поста
-        postInfoDTO.setTags(tagNames);
+        postInfoDTO.setTags(tagNames);  //Добавление тэгов к DTO поста
 
         return postInfoDTO;
     }
 
-    public PostRequestDTO getPostsByTag(int offset, int limit, String tag) {
+    public PostResponceDTO getPostsByTag(int offset, int limit, String tag) {
         List<Post> posts = postRepositoryPort.getPostsByTag(tag);
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-        return new PostRequestDTO(count, postInfoDTOList);
+        return new PostResponceDTO(count, postInfoDTOList);
     }
 
     //Получение списка с отступом и лимитом

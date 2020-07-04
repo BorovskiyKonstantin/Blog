@@ -14,39 +14,42 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends CrudRepository<Post, Integer> {
+    //Строка с условием для фильтрации в запросе активных, одобренных медератором постов с датой публикации < текущего момента.
+    String activePostsFilter = "p.is_active = 1 AND p.moderation_status = 'ACCEPTED' AND p.time < NOW()";
 
     //recent   -   сортировать   по   дате   публикации,   выводить   сначала   новые
-    @Query(value = "SELECT * FROM posts p WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 AND p.is_active = 1 ORDER BY p.time", nativeQuery = true)
-    List<Post> getPostsRecentMode(Timestamp currentTime);
+    @Query(value = "SELECT * FROM posts p WHERE " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
+    List<Post> getPostsRecentMode();
 
     //popular   -   сортировать   по   убыванию   количества   комментариев
-    @Query(value = "SELECT * FROM posts p LEFT JOIN post_comments comm ON p.id = comm.post_id WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 AND p.is_active = 1 GROUP BY p.id ORDER BY COUNT(comm.id) DESC", nativeQuery = true)
-    List<Post> getPostsPopularMode(Timestamp currentTime);
+    @Query(value = "SELECT * FROM posts p LEFT JOIN post_comments comm ON p.id = comm.post_id WHERE " + activePostsFilter + " GROUP BY p.id ORDER BY COUNT(comm.id) DESC", nativeQuery = true)
+    List<Post> getPostsPopularMode();
 
     //best   -   сортировать   по   убыванию   количества   лайков
-    @Query(value = "SELECT * FROM posts p LEFT JOIN post_votes v ON p.id = v.post_id WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 AND p.is_active = 1 GROUP BY p.id ORDER BY sum(value = 1) DESC", nativeQuery = true)
-    List<Post> getPostsBestMode(Timestamp currentTime);
+    @Query(value = "SELECT * FROM posts p LEFT JOIN post_votes v ON p.id = v.post_id WHERE " + activePostsFilter + " GROUP BY p.id ORDER BY sum(value = 1) DESC", nativeQuery = true)
+    List<Post> getPostsBestMode();
 
     //early   -   сортировать   по   дате   публикации,   выводить   сначала   старые
-    @Query(value = "SELECT * FROM posts p WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 AND p.is_active = 1 ORDER BY p.time DESC", nativeQuery = true)
-    List<Post> getPostsEarlyMode(Timestamp currentTime);
+    @Query(value = "SELECT * FROM posts p WHERE " + activePostsFilter + " ORDER BY p.time DESC", nativeQuery = true)
+    List<Post> getPostsEarlyMode();
 
     @Query(value = "SELECT p FROM Post p WHERE p.moderationStatus = ?1")
     List<Post> getByModerationStatus(ModerationStatus moderationStatus);
 
-    @Query(value = "SELECT * FROM posts p WHERE p.title LIKE %?1% AND p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?2 AND p.is_active = 1 ORDER BY p.time", nativeQuery = true)
-    List<Post> searchPosts(String query, Timestamp currentTime);
+    @Query(value = "SELECT * FROM posts p WHERE p.title LIKE %:query% AND " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
+    List<Post> searchPosts(@Param("query") String searchQuery);
 
-    @Query(value = "SELECT * FROM posts p WHERE p.id = ?1 AND p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?2 AND p.is_active = 1 ORDER BY p.time", nativeQuery = true)
-    Optional<Post> getById(int id, Timestamp currentTime);
+    @Query(value = "SELECT * FROM posts p WHERE p.id = :id AND " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
+    Optional<Post> getById(@Param("id") int id);
 
-    @Query(value = "SELECT * FROM posts p WHERE p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?1 AND p.is_active = 1 AND cast(p.time as date) = ?2 ORDER BY p.time", nativeQuery = true)
-    List<Post> getPostsByDate(Timestamp currentTime, String date);
+    @Query(value = "SELECT * FROM posts p WHERE " + activePostsFilter + " AND cast(p.time as date) = :date ORDER BY p.time", nativeQuery = true)
+    List<Post> getPostsByDate(@Param("date") String date);
 
     @Query(value = "SELECT * FROM posts p\n" +
             "JOIN tag2post tp ON p.id = tp.post_id\n" +
             "JOIN tags t ON t.id = tp.tag_id\n" +
-            "WHERE t.name = ?1\n" +
-            "AND p.is_active = true AND p.moderation_status = 'ACCEPTED' AND p.time < ?2 AND p.is_active = 1 ORDER BY p.time", nativeQuery = true)
-    List<Post> getPostsByTag(String tag, Timestamp currentTime);
+            "WHERE " +
+            "t.name = %:tag%\n" +
+            "AND " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
+    List<Post> getPostsByTag(@Param("tag") String tag);
 }

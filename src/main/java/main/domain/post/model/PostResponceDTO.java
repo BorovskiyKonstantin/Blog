@@ -2,11 +2,11 @@ package main.domain.post.model;
 
 import java.util.List;
 
-public class PostRequestDTO {
+public class PostResponceDTO {
     private long count;
     private List<PostInfoDTO> posts;
 
-    public PostRequestDTO(long count, List<PostInfoDTO> posts) {
+    public PostResponceDTO(long count, List<PostInfoDTO> posts) {
         this.count = count;
         this.posts = posts;
     }
