@@ -9,13 +9,11 @@ import main.domain.postcomments.entity.PostComment;
 import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.port.PostCommentsRepositoryPort;
 import main.domain.tag.entity.Tag;
-import main.domain.tag.port.TagRepositoryPort;
 import main.domain.user.entity.User;
 import main.domain.user.port.UserRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 @Transactional
 public class PostUseCase {
     private PostRepositoryPort postRepositoryPort;
@@ -112,17 +110,25 @@ public class PostUseCase {
         List<Post> posts;
         switch (status){
             case "new":
-                posts = postRepositoryPort.getByModerationStatus(ModerationStatus.NEW, null);
+                posts = postRepositoryPort.getActivePostsByModerationStatus(ModerationStatus.NEW, null);
                 break;
             case "declined":
-                posts = postRepositoryPort.getByModerationStatus(ModerationStatus.DECLINED, getCurrentUser().getId());
+                posts = postRepositoryPort.getActivePostsByModerationStatus(ModerationStatus.DECLINED, getCurrentUser().getId());
                 break;
             case "accepted":
-                posts = postRepositoryPort.getByModerationStatus(ModerationStatus.ACCEPTED, getCurrentUser().getId());
+                posts = postRepositoryPort.getActivePostsByModerationStatus(ModerationStatus.ACCEPTED, getCurrentUser().getId());
                 break;
             default:
                 throw new IllegalArgumentException();
         }
+        int count = posts.size();
+        posts = getWithOffsetAndLimit(posts, offset, limit);
+        List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
+        return new PostResponceDTO(count, postInfoDTOList);
+    }
+
+    public PostResponceDTO getCurrentUserPosts(int offset, int limit, String status) {
+        List<Post> posts = postRepositoryPort.getCurrentUserPosts(getCurrentUser().getId(), status);
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
@@ -191,7 +197,7 @@ public class PostUseCase {
         return time;
     }
 
-    public User getCurrentUser(){
+    private User getCurrentUser(){
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepositoryPort.findUserByEmail(userEmail).orElseThrow();
     }

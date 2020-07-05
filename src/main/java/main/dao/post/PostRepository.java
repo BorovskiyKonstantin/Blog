@@ -33,9 +33,9 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     @Query(value = "SELECT * FROM posts p WHERE " + activePostsFilter + " ORDER BY p.time DESC", nativeQuery = true)
     List<Post> getPostsEarlyMode();
 
-    @Query(value = "SELECT p FROM Post p WHERE p.moderationStatus = :status and (:moderatorId is null or p.moderatorId = :moderatorId) and p.isActive = 1")
-    List<Post> getByModerationStatus(@Param("status") ModerationStatus moderationStatus,
-                                     @Param("moderatorId") Integer moderatorId);
+    @Query(value = "SELECT p FROM Post p WHERE p.moderationStatus = :status AND (:moderatorId IS NULL OR p.moderatorId = :moderatorId) AND p.isActive = 1 ORDER BY p.time DESC")
+    List<Post> getActivePostsByModerationStatus(@Param("status") ModerationStatus moderationStatus,
+                                                @Param("moderatorId") Integer moderatorId);
 
     @Query(value = "SELECT * FROM posts p WHERE p.title LIKE %:query% AND " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
     List<Post> searchPosts(@Param("query") String searchQuery);
@@ -53,5 +53,10 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "t.name = %:tag%\n" +
             "AND " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
     List<Post> getPostsByTag(@Param("tag") String tag);
+
+    @Query("SELECT p FROM Post p WHERE p.userId = :userId AND p.isActive = :isActive AND (:status IS NULL or p.moderationStatus = :status)")
+    List<Post> getCurrentUserPosts(@Param("userId")int userId,
+                                   @Param("isActive")boolean isActive,
+                                   @Param("status")ModerationStatus moderationStatus);
 
 }

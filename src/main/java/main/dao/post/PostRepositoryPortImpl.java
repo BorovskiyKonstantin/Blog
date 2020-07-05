@@ -6,8 +6,6 @@ import main.domain.post.port.PostRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,8 +43,8 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public List<Post> getByModerationStatus(ModerationStatus moderationStatus, Integer moderatorId) {
-            return postRepository.getByModerationStatus(moderationStatus, moderatorId);
+    public List<Post> getActivePostsByModerationStatus(ModerationStatus moderationStatus, Integer moderatorId) {
+            return postRepository.getActivePostsByModerationStatus(moderationStatus, moderatorId);
     }
 
     @Override
@@ -67,6 +65,34 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     @Override
     public List<Post> getPostsByTag(String tag) {
         return postRepository.getPostsByTag(tag);
+    }
+
+    @Override
+    public List<Post> getCurrentUserPosts(int currentUserId, String status) {
+        boolean isActive;
+        ModerationStatus moderationStatus;
+        switch (status){
+            case "inactive":
+                isActive = false;
+                moderationStatus = null;
+                break;
+            case "pending":
+                isActive = true;
+                moderationStatus = ModerationStatus.NEW;
+                break;
+            case "declined":
+                isActive = true;
+                moderationStatus = ModerationStatus.DECLINED;
+                break;
+            case "published":
+                isActive = true;
+                moderationStatus = ModerationStatus.ACCEPTED;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal argument: status");
+        }
+
+        return postRepository.getCurrentUserPosts(currentUserId, isActive, moderationStatus);
     }
 
 }

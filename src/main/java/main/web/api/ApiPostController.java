@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
  * + 3. Получение   поста   -   GET   /api/post/ID
  * + 4. Список   постов   за   конкретную   дату   -   GET   /api/post/byDate
  * + 5. Список   постов   по   тэгу   -   GET   /api/post/byTag
- * 6. Список   постов   на   модерацию   -   GET   /api/post/moderation
- * 7. Список   моих   постов   -   GET   /api/post/my
+ * + 6. Список   постов   на   модерацию   -   GET   /api/post/moderation
+ * + 7. Список   моих   постов   -   GET   /api/post/my
  * 8. Добавление   поста   -   POST   /api/post
  * 9. Редактирование   поста   -   PUT   /api/post/ID
  * 10. Лайк   поста   -   POST   /api/post/like
@@ -77,5 +77,14 @@ public class ApiPostController {
                                               @RequestParam(name = "status") String status){
 
         return postUseCase.getPostsModeration(offset, limit, status);
+    }
+
+//    7. Список   моих   постов   -   GET   /api/post/my
+    @GetMapping("/my")
+    @Secured("ROLE_USER")
+    public PostResponceDTO getMyPosts(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                      @RequestParam(name = "limit") int limit,
+                                      @RequestParam(name = "status") String status){
+        return postUseCase.getCurrentUserPosts(offset, limit, status);
     }
 }
