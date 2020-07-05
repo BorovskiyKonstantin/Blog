@@ -1,5 +1,6 @@
 package main.domain.post.usecase;
 
+import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.post.model.PostInfoDTO;
 import main.domain.post.model.PostResponceDTO;
@@ -13,6 +14,7 @@ import main.domain.user.entity.User;
 import main.domain.user.port.UserRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,6 +108,27 @@ public class PostUseCase {
         return new PostResponceDTO(count, postInfoDTOList);
     }
 
+    public PostResponceDTO getPostsModeration(int offset, int limit, String status) {
+        List<Post> posts;
+        switch (status){
+            case "new":
+                posts = postRepositoryPort.getByModerationStatus(ModerationStatus.NEW, null);
+                break;
+            case "declined":
+                posts = postRepositoryPort.getByModerationStatus(ModerationStatus.DECLINED, getCurrentUser().getId());
+                break;
+            case "accepted":
+                posts = postRepositoryPort.getByModerationStatus(ModerationStatus.ACCEPTED, getCurrentUser().getId());
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+        int count = posts.size();
+        posts = getWithOffsetAndLimit(posts, offset, limit);
+        List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
+        return new PostResponceDTO(count, postInfoDTOList);
+    }
+
     //Получение списка с отступом и лимитом
     private List<Post> getWithOffsetAndLimit(List<Post> posts, int offset, int limit){
         return posts.stream().skip(offset).limit(limit).collect(Collectors.toList());
@@ -166,5 +189,10 @@ public class PostUseCase {
         int minute = postDateTime.getMinute();
         String time = String.format("%s, %02d:%02d", date, hour, minute);
         return time;
+    }
+
+    public User getCurrentUser(){
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepositoryPort.findUserByEmail(userEmail).orElseThrow();
     }
 }

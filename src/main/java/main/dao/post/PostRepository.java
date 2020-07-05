@@ -33,8 +33,9 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     @Query(value = "SELECT * FROM posts p WHERE " + activePostsFilter + " ORDER BY p.time DESC", nativeQuery = true)
     List<Post> getPostsEarlyMode();
 
-    @Query(value = "SELECT p FROM Post p WHERE p.moderationStatus = ?1")
-    List<Post> getByModerationStatus(ModerationStatus moderationStatus);
+    @Query(value = "SELECT p FROM Post p WHERE p.moderationStatus = :status and (:moderatorId is null or p.moderatorId = :moderatorId) and p.isActive = 1")
+    List<Post> getByModerationStatus(@Param("status") ModerationStatus moderationStatus,
+                                     @Param("moderatorId") Integer moderatorId);
 
     @Query(value = "SELECT * FROM posts p WHERE p.title LIKE %:query% AND " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
     List<Post> searchPosts(@Param("query") String searchQuery);

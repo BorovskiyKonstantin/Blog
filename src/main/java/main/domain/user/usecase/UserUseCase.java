@@ -97,7 +97,7 @@ public class UserUseCase {
     public AuthResponseDTO createSuccessfulAuthResponseDTO(User user){
         int moderationCount = 0;
         if (user.isModerator()){
-            List <Post> newPosts = postRepositoryPort.getByModerationStatus(ModerationStatus.NEW);
+            List <Post> newPosts = postRepositoryPort.getByModerationStatus(ModerationStatus.NEW, null);
             moderationCount = newPosts.size();
         }
         return AuthResponseDTO.successfulDTO(user, moderationCount);

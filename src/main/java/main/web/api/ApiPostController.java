@@ -6,6 +6,7 @@ import main.domain.post.model.PostInfoDTO;
 import main.domain.post.model.PostResponceDTO;
 import main.domain.post.usecase.PostUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -66,5 +67,15 @@ public class ApiPostController {
                                          @RequestParam(name = "limit") int limit,
                                          @RequestParam(name = "tag") String tag){
         return postUseCase.getPostsByTag(offset, limit, tag);
+    }
+
+//    6. Список   постов   на   модерацию   -   GET   /api/post/moderation
+    @GetMapping("/moderation")
+    @Secured("ROLE_MODERATOR")
+    public PostResponceDTO getPostsModeration(@RequestParam(name = "offset", defaultValue = "0") int offset,
+                                              @RequestParam(name = "limit") int limit,
+                                              @RequestParam(name = "status") String status){
+
+        return postUseCase.getPostsModeration(offset, limit, status);
     }
 }

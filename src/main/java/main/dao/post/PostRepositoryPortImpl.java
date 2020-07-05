@@ -45,8 +45,8 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public List<Post> getByModerationStatus(ModerationStatus moderationStatus) {
-        return postRepository.getByModerationStatus(moderationStatus);
+    public List<Post> getByModerationStatus(ModerationStatus moderationStatus, Integer moderatorId) {
+            return postRepository.getByModerationStatus(moderationStatus, moderatorId);
     }
 
     @Override

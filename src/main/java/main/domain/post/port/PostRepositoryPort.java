@@ -11,7 +11,7 @@ public interface PostRepositoryPort {
 
     List<Post> getAllPosts(String mode);
 
-    List<Post> getByModerationStatus(ModerationStatus moderationStatus);
+    List<Post> getByModerationStatus(ModerationStatus moderationStatus, Integer moderatorId);
 
     List<Post> searchPosts(String query);
 
