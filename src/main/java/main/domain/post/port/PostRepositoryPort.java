@@ -22,4 +22,6 @@ public interface PostRepositoryPort {
     List<Post> getPostsByTag(String tag);
 
     List<Post> getCurrentUserPosts(int currentUserId, String status);
+
+    Post save(Post post);
 }
