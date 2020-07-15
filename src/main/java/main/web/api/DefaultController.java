@@ -20,7 +20,7 @@ public class DefaultController {
             "/post/*",
             "/posts/*",
             "/profile",
-            "settings",
+            "/settings",
             "/stat",
             "/login/change-password/*",
             "/404"})

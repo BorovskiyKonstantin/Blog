@@ -95,4 +95,9 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
         return postRepository.getCurrentUserPosts(currentUserId, isActive, moderationStatus);
     }
 
+    @Override
+    public Post save(Post post) {
+        return postRepository.save(post);
+    }
+
 }

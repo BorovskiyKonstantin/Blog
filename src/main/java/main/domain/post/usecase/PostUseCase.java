@@ -3,7 +3,9 @@ package main.domain.post.usecase;
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.post.model.PostInfoDTO;
-import main.domain.post.model.PostResponceDTO;
+import main.domain.post.model.PostSaveRequestDTO;
+import main.domain.post.model.PostSaveResponseDTO;
+import main.domain.post.model.PostResponseDTO;
 import main.domain.post.port.PostRepositoryPort;
 import main.domain.postcomments.entity.PostComment;
 import main.domain.postcomments.model.CommentResponseDTO;
@@ -21,8 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,28 +41,28 @@ public class PostUseCase {
     }
 
 
-    public PostResponceDTO getPosts(int offset, int limit, String mode) {
+    public PostResponseDTO getPosts(int offset, int limit, String mode) {
         List<Post> posts = postRepositoryPort.getAllPosts(mode);
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-        return new PostResponceDTO(count, postInfoDTOList);
+        return new PostResponseDTO(count, postInfoDTOList);
     }
 
-    public PostResponceDTO searchPosts(int offset, int limit, String query) {
+    public PostResponseDTO searchPosts(int offset, int limit, String query) {
         List<Post> posts = postRepositoryPort.searchPosts(query);
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-        return new PostResponceDTO(count, postInfoDTOList);
+        return new PostResponseDTO(count, postInfoDTOList);
     }
 
-    public PostResponceDTO getPostsByDate(int offset, int limit, String date) {
+    public PostResponseDTO getPostsByDate(int offset, int limit, String date) {
         List<Post> posts = postRepositoryPort.getPostsByDate(date);
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-        return new PostResponceDTO(count, postInfoDTOList);
+        return new PostResponseDTO(count, postInfoDTOList);
     }
 
     public PostInfoDTO getPostById(Integer id){
@@ -98,15 +99,15 @@ public class PostUseCase {
         return postInfoDTO;
     }
 
-    public PostResponceDTO getPostsByTag(int offset, int limit, String tag) {
+    public PostResponseDTO getPostsByTag(int offset, int limit, String tag) {
         List<Post> posts = postRepositoryPort.getPostsByTag(tag);
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-        return new PostResponceDTO(count, postInfoDTOList);
+        return new PostResponseDTO(count, postInfoDTOList);
     }
 
-    public PostResponceDTO getPostsModeration(int offset, int limit, String status) {
+    public PostResponseDTO getPostsModeration(int offset, int limit, String status) {
         List<Post> posts;
         switch (status){
             case "new":
@@ -124,15 +125,52 @@ public class PostUseCase {
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-        return new PostResponceDTO(count, postInfoDTOList);
+        return new PostResponseDTO(count, postInfoDTOList);
     }
 
-    public PostResponceDTO getCurrentUserPosts(int offset, int limit, String status) {
+    public PostResponseDTO getCurrentUserPosts(int offset, int limit, String status) {
         List<Post> posts = postRepositoryPort.getCurrentUserPosts(getCurrentUser().getId(), status);
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
-        return new PostResponceDTO(count, postInfoDTOList);
+        return new PostResponseDTO(count, postInfoDTOList);
+    }
+
+    public PostSaveResponseDTO addPost(PostSaveRequestDTO requestDTO){
+        //Поиск ошибок
+        Map<String,String> errors = new LinkedHashMap<>();
+        if (requestDTO.getTitle().trim().length() < 3){
+            errors.put("title", "Заголовок не установлен");
+        }
+        if (requestDTO.getText().trim().replaceAll("<[^<>]+>", "").length() < 50){
+            errors.put("text", "Текст публикации слишком короткий");
+        }
+        if (errors.size() > 0)
+            return new PostSaveResponseDTO(errors);
+
+        //Маппинг тэгов из запроса
+        List<Tag> tagList = Arrays.stream(requestDTO.getTags())
+                .map(t -> {
+                    Tag tag = new Tag();
+                    tag.setName(t);
+                    return tag;
+                })
+                .collect(Collectors.toList());
+
+        //Добавление поста
+        Post post = new Post();
+        post.setUserId(getCurrentUser().getId());
+        post.setActive(requestDTO.isActive());
+        post.setModerationStatus(ModerationStatus.NEW);
+        Timestamp time = requestDTO.getTime().getTime() > System.currentTimeMillis() ?
+                requestDTO.getTime() : new Timestamp(System.currentTimeMillis());
+        post.setTime(time);
+        post.setTitle(requestDTO.getTitle());
+        post.setText(requestDTO.getText());
+        post.setViewCount(0);
+        post.setTags(tagList);
+        postRepositoryPort.save(post);
+        return new PostSaveResponseDTO(true);
     }
 
     //Получение списка с отступом и лимитом

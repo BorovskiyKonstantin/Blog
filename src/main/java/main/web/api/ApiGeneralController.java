@@ -82,7 +82,6 @@ public class ApiGeneralController {
         }
     }
 
-    //TODO: Заглушка для главной страницы! Реализовать в будущем
     //4. Получение   списка   тэгов   -   GET   /api/tag/
     @GetMapping(value = "/tag")
     public List<Tag> getTags(@RequestParam(name = "query", required = false) String query){
