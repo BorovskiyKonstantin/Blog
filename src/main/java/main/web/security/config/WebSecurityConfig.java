@@ -37,6 +37,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,  "/api/auth/*").permitAll()   //запросы без аутентификации
                 .antMatchers(HttpMethod.OPTIONS,  "/api/auth/*").permitAll()    //запросы без аутентификации
                 .antMatchers(HttpMethod.POST).authenticated()   //все запросы POST проходят через аутентификацию
+                .antMatchers(HttpMethod.PUT).authenticated()   //все запросы PUT проходят через аутентификацию
+                .antMatchers(HttpMethod.DELETE).authenticated()   //все запросы DELETE проходят через аутентификацию
                 .antMatchers("/api/auth/login").not().fullyAuthenticated()
                 .antMatchers("/**").permitAll()     //запросы без аутентификации
                 .and()

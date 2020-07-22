@@ -7,8 +7,10 @@ import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.port.PostCommentsRepositoryPort;
 import main.domain.user.usecase.UserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
@@ -28,19 +30,19 @@ public class PostCommentUseCase {
         this.postRepositoryPort = postRepositoryPort;
     }
 
-    public CommentResponseDTO saveComment(CommentRequestDTO commentRequestDTO) throws Exception{
+    public CommentResponseDTO saveComment(CommentRequestDTO commentRequestDTO) throws Exception {
         Integer parentId = commentRequestDTO.getParentId();
         Integer postId = commentRequestDTO.getPostId();
         String text = commentRequestDTO.getText();
 
         if (text.length() < 2) {
-            Map<String,String> errors = new LinkedHashMap<>();
-            errors.put("text","Текст комментария не задан или слишком короткий");
+            Map<String, String> errors = new LinkedHashMap<>();
+            errors.put("text", "Текст комментария не задан или слишком короткий");
             return new CommentResponseDTO(errors);
         }
 
         //Бросить exception, если не найден активный пост с переданным id
-        postRepositoryPort.getPostById(postId).orElseThrow();
+        postRepositoryPort.getActivePostById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         //Бросить exception, если у поста не найден комментарий с id = parentId
         if (parentId != null) {
             postCommentsRepositoryPort.findCommentByIdForPostWithId(parentId, postId).orElseThrow();

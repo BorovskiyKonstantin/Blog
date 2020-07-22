@@ -15,11 +15,13 @@ public interface PostRepositoryPort {
 
     List<Post> searchPosts(String query);
 
-    Optional<Post> getPostById(Integer id);
+    Optional<Post> getActivePostById(Integer id);
 
     List<Post> getPostsByDate(String date);
 
     List<Post> getPostsByTag(String tag);
+
+    Optional<Post> findPostById(int postId);
 
     List<Post> getCurrentUserPosts(int currentUserId, String status);
 

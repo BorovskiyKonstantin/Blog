@@ -53,8 +53,8 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public Optional<Post> getPostById(Integer id) {
-        return postRepository.getById(id);
+    public Optional<Post> getActivePostById(Integer id) {
+        return postRepository.getActiveById(id);
     }
 
     @Override
@@ -65,6 +65,11 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     @Override
     public List<Post> getPostsByTag(String tag) {
         return postRepository.getPostsByTag(tag);
+    }
+
+    @Override
+    public Optional<Post> findPostById(int postId) {
+        return postRepository.findById(postId);
     }
 
     @Override

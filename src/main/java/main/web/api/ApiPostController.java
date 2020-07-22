@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * + 6. Список   постов   на   модерацию   -   GET   /api/post/moderation
  * + 7. Список   моих   постов   -   GET   /api/post/my
  * + 8. Добавление   поста   -   POST   /api/post
- * 9. Редактирование   поста   -   PUT   /api/post/ID
+ * + 9. Редактирование   поста   -   PUT   /api/post/ID
  * 10. Лайк   поста   -   POST   /api/post/like
  * 11. Дизлайк   поста   -  P OST   /api/post/dislike
  */
@@ -94,6 +94,14 @@ public class ApiPostController {
     @PostMapping
     public PostSaveResponseDTO addPost (@RequestBody PostSaveRequestDTO requestDTO){
         PostSaveResponseDTO response = postUseCase.addPost(requestDTO);
+        return response;
+    }
+
+    //    9. Редактирование   поста   -   PUT   /api/post/ID
+    @PutMapping("/{id}")
+    public PostSaveResponseDTO editPost(@PathVariable("id") Integer id,
+                                        @RequestBody PostSaveRequestDTO requestDTO) {
+        PostSaveResponseDTO response = postUseCase.editPost(id, requestDTO);
         return response;
     }
 }

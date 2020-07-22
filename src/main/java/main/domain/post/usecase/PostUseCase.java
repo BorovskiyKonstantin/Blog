@@ -16,6 +16,7 @@ import main.domain.user.port.UserRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -67,7 +68,7 @@ public class PostUseCase {
 
     public PostInfoDTO getPostById(Integer id){
         //Поиск поста в БД по id
-        Post post = postRepositoryPort.getPostById(id)
+        Post post = postRepositoryPort.getActivePostById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found"));
 
         //Создание DTO из поста
@@ -173,6 +174,46 @@ public class PostUseCase {
         return new PostSaveResponseDTO(true);
     }
 
+    public PostSaveResponseDTO editPost(Integer id, PostSaveRequestDTO requestDTO) {
+        Post post = postRepositoryPort.findPostById(id).orElseThrow(
+                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if(getCurrentUser().getId() != post.getUserId()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        //Поиск ошибок
+        Map<String,String> errors = new LinkedHashMap<>();
+        if (requestDTO.getTitle().trim().length() < 3){
+            errors.put("title", "Заголовок не установлен");
+        }
+        if (requestDTO.getText().trim().replaceAll("<[^<>]+>", "").length() < 50){
+            errors.put("text", "Текст публикации слишком короткий");
+        }
+        if (errors.size() > 0)
+            return new PostSaveResponseDTO(errors);
+
+        //Маппинг тэгов из запроса
+        List<Tag> tagList = Arrays.stream(requestDTO.getTags())
+                .map(t -> {
+                    Tag tag = new Tag();
+                    tag.setName(t);
+                    return tag;
+                })
+                .collect(Collectors.toList());
+
+        //Редактирование и сохранение поста
+        post.setActive(requestDTO.isActive());
+        post.setModerationStatus(ModerationStatus.NEW);
+        Timestamp time = requestDTO.getTime().getTime() > System.currentTimeMillis() ?
+                requestDTO.getTime() : new Timestamp(System.currentTimeMillis());
+        post.setTime(time);
+        post.setTitle(requestDTO.getTitle());
+        post.setText(requestDTO.getText());
+        post.setTags(tagList);
+        postRepositoryPort.save(post);
+        return new PostSaveResponseDTO(true);
+    }
+
     //Получение списка с отступом и лимитом
     private List<Post> getWithOffsetAndLimit(List<Post> posts, int offset, int limit){
         return posts.stream().skip(offset).limit(limit).collect(Collectors.toList());
@@ -237,6 +278,7 @@ public class PostUseCase {
 
     private User getCurrentUser(){
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepositoryPort.findUserByEmail(userEmail).orElseThrow();
+        return userRepositoryPort.findUserByEmail(userEmail).orElseThrow(()->new UsernameNotFoundException("User Not Authorized"));
     }
+
 }

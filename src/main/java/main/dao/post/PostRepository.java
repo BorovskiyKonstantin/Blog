@@ -41,7 +41,7 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     List<Post> searchPosts(@Param("query") String searchQuery);
 
     @Query(value = "SELECT * FROM posts p WHERE p.id = :id AND " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
-    Optional<Post> getById(@Param("id") int id);
+    Optional<Post> getActiveById(@Param("id") int id);
 
     @Query(value = "SELECT * FROM posts p WHERE " + activePostsFilter + " AND cast(p.time as date) = :date ORDER BY p.time", nativeQuery = true)
     List<Post> getPostsByDate(@Param("date") String date);
