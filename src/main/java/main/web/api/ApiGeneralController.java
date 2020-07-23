@@ -17,6 +17,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -73,13 +74,9 @@ public class ApiGeneralController {
 
     //3. Отправка   комментария   к   посту   -   POST   /api/comment/
     @PostMapping("/comment")
-    public ResponseEntity<CommentResponseDTO> comment(@RequestBody CommentRequestDTO commentRequestDTO){
-        try {
+    public CommentResponseDTO comment(@Valid @RequestBody CommentRequestDTO commentRequestDTO){
             CommentResponseDTO postCommentDTO = postCommentUseCase.saveComment(commentRequestDTO);
-            return new ResponseEntity<>(postCommentDTO, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+            return postCommentDTO;
     }
 
     //4. Получение   списка   тэгов   -   GET   /api/tag/

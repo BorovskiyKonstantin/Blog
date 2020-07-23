@@ -30,7 +30,7 @@ public class PostCommentUseCase {
         this.postRepositoryPort = postRepositoryPort;
     }
 
-    public CommentResponseDTO saveComment(CommentRequestDTO commentRequestDTO) throws Exception {
+    public CommentResponseDTO saveComment(CommentRequestDTO commentRequestDTO) {
         Integer parentId = commentRequestDTO.getParentId();
         Integer postId = commentRequestDTO.getPostId();
         String text = commentRequestDTO.getText();
