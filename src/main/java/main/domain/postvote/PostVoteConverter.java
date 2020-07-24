@@ -13,9 +13,9 @@ public class PostVoteConverter implements AttributeConverter<PostVoteType, Integ
             return null;
         switch (attribute) {
             case LIKE:
-                return -1;
-            case DISLIKE:
                 return 1;
+            case DISLIKE:
+                return -1;
             default:
                 throw new IllegalArgumentException(attribute + " not supported");
         }

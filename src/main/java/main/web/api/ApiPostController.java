@@ -7,7 +7,12 @@ import main.domain.post.model.PostInfoDTO;
 import main.domain.post.model.PostSaveResponseDTO;
 import main.domain.post.model.PostResponseDTO;
 import main.domain.post.usecase.PostUseCase;
+import main.domain.postvote.entity.PostVoteType;
+import main.domain.postvote.model.VoteRequestDTO;
+import main.domain.postvote.model.VoteResponseDTO;
+import main.domain.postvote.usecase.PostVoteUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,17 +26,19 @@ import org.springframework.web.bind.annotation.*;
  * + 7. Список   моих   постов   -   GET   /api/post/my
  * + 8. Добавление   поста   -   POST   /api/post
  * + 9. Редактирование   поста   -   PUT   /api/post/ID
- * 10. Лайк   поста   -   POST   /api/post/like
- * 11. Дизлайк   поста   -  P OST   /api/post/dislike
+ * + 10. Лайк   поста   -   POST   /api/post/like
+ * + 11. Дизлайк   поста   -  P OST   /api/post/dislike
  */
 @RestController
 @RequestMapping("/api/post")
 public class ApiPostController {
     private PostUseCase postUseCase;
+    private PostVoteUseCase voteUseCase;
 
     @Autowired
-    public ApiPostController(PostUseCase postUseCase) {
+    public ApiPostController(PostUseCase postUseCase, PostVoteUseCase voteUseCase) {
         this.postUseCase = postUseCase;
+        this.voteUseCase = voteUseCase;
     }
 
     //    1. Список   постов
@@ -103,5 +110,17 @@ public class ApiPostController {
                                         @RequestBody PostSaveRequestDTO requestDTO) {
         PostSaveResponseDTO response = postUseCase.editPost(id, requestDTO);
         return response;
+    }
+
+//    10. Лайк   поста   -   POST   /api/post/like
+    @PostMapping("/like")
+    public VoteResponseDTO likePost (@RequestBody VoteRequestDTO requestDTO){
+        return voteUseCase.votePost(requestDTO, PostVoteType.LIKE);
+    }
+
+//    11. Дизлайк   поста   -  POST   /api/post/dislike
+    @PostMapping("/dislike")
+    public VoteResponseDTO dislikePost (@RequestBody VoteRequestDTO requestDTO){
+        return voteUseCase.votePost(requestDTO, PostVoteType.DISLIKE);
     }
 }
