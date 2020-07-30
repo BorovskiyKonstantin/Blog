@@ -22,7 +22,21 @@ public class TagRepositoryPortImpl implements TagRepositoryPort {
     }
 
     @Override
-    public void save(Tag tag) {
-        tagRepository.save(tag);
+    public Tag save(Tag tag) {
+        tagRepository.findOneByName(tag.getName())
+                .ifPresentOrElse(
+                        foundTag -> tag.setId(foundTag.getId()),
+                        () -> tag.setId(tagRepository.save(tag).getId()));
+        return tag;
+    }
+
+    @Override
+    public List<Tag> searchTagsStartingWith(String query) {
+        return tagRepository.findByNameStartingWith(query);
+    }
+
+    @Override
+    public Integer findActivePostsCountByTagId(int tagId) {
+        return tagRepository.findActivePostsCountByTag(tagId);
     }
 }

@@ -3,6 +3,8 @@ package main.dao.post;
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.post.port.PostRepositoryPort;
+import main.domain.tag.entity.Tag;
+import main.domain.tag.port.TagRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,15 +14,22 @@ import java.util.Optional;
 @Component
 public class PostRepositoryPortImpl implements PostRepositoryPort {
     private PostRepository postRepository;
+    private TagRepositoryPort tagRepositoryPort;
 
     @Autowired
-    public PostRepositoryPortImpl(PostRepository postRepository) {
+    public PostRepositoryPortImpl(PostRepository postRepository, TagRepositoryPort tagRepositoryPort) {
         this.postRepository = postRepository;
+        this.tagRepositoryPort = tagRepositoryPort;
     }
 
     @Override
     public List<Post> findAll() {
         return (List<Post>) postRepository.findAll();
+    }
+
+    @Override
+    public Integer getActivePostsCount() {
+        return postRepository.getActivePostsCount();
     }
 
     @Override
@@ -44,7 +53,7 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
 
     @Override
     public List<Post> getActivePostsByModerationStatus(ModerationStatus moderationStatus, Integer moderatorId) {
-            return postRepository.getActivePostsByModerationStatus(moderationStatus, moderatorId);
+        return postRepository.getActivePostsByModerationStatus(moderationStatus, moderatorId);
     }
 
     @Override
@@ -76,7 +85,7 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     public List<Post> getCurrentUserPosts(int currentUserId, String status) {
         boolean isActive;
         ModerationStatus moderationStatus;
-        switch (status){
+        switch (status) {
             case "inactive":
                 isActive = false;
                 moderationStatus = null;
@@ -102,6 +111,9 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
 
     @Override
     public Post save(Post post) {
+        List<Tag> tagsA = post.getTags();
+        //сохранить тэги, т.к. поле name уникально
+        tagsA.forEach(t -> tagRepositoryPort.save(t));
         return postRepository.save(post);
     }
 

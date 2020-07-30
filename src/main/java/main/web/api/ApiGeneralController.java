@@ -7,18 +7,15 @@ import main.domain.globalsetting.usecase.GlobalSettingUseCase;
 import main.domain.postcomments.model.CommentRequestDTO;
 import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.usecase.PostCommentUseCase;
-import main.domain.tag.entity.Tag;
+import main.domain.tag.model.TagResponseDTO;
 import main.domain.tag.usecase.TagUseCase;
 import main.domain.user.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * для прочих запросов к API
@@ -26,7 +23,7 @@ import java.util.List;
  * + 1. Общие   данные   блога   -   GET   /api/init
  * + 2. Загрузка   изображений   -   POST   /api/image
  * + 3. Отправка   комментария   к   посту   -   POST   /api/comment/
- * - (заглушка) 4. Получение   списка   тэгов   -   GET   /api/tag/ (!!!!!!!!!!Нужны изеры и посты для тестирования)
+ * + 4. Получение   списка   тэгов   -   GET   /api/tag/
  *   5. Модерация   поста   -   POST   /api/moderation
  * - 6. Календарь   (количества   публикаций)   -   GET   /api/calendar/
  *   7. Редактирование   моего   профиля   -   POST   /api/profile/my
@@ -81,8 +78,8 @@ public class ApiGeneralController {
 
     //4. Получение   списка   тэгов   -   GET   /api/tag/
     @GetMapping(value = "/tag")
-    public List<Tag> getTags(@RequestParam(name = "query", required = false) String query){
-        return tagUseCase.getTags(query);
+    public TagResponseDTO getTags(@RequestParam(name = "query", required = false) String query){
+        return new TagResponseDTO(tagUseCase.getTags(query));
     }
 
     //    10. Получение   настроек   -   GET   /api/settings/

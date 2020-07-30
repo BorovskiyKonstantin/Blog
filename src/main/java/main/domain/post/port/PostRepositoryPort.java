@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface PostRepositoryPort {
     List<Post> findAll();
 
+    Integer getActivePostsCount();
+
     List<Post> getAllPosts(String mode);
 
     List<Post> getActivePostsByModerationStatus(ModerationStatus moderationStatus, Integer moderatorId);

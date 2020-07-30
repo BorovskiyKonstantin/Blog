@@ -50,7 +50,7 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "JOIN tag2post tp ON p.id = tp.post_id\n" +
             "JOIN tags t ON t.id = tp.tag_id\n" +
             "WHERE " +
-            "t.name = %:tag%\n" +
+            "t.name = :tag\n" +
             "AND " + activePostsFilter + " ORDER BY p.time", nativeQuery = true)
     List<Post> getPostsByTag(@Param("tag") String tag);
 
@@ -59,4 +59,6 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
                                    @Param("isActive")boolean isActive,
                                    @Param("status")ModerationStatus moderationStatus);
 
+    @Query(value = "SELECT count(*) FROM posts p WHERE " + activePostsFilter, nativeQuery = true)
+    Integer getActivePostsCount();
 }

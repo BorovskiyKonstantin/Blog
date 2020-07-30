@@ -151,13 +151,8 @@ public class PostUseCase {
 
         //Маппинг тэгов из запроса
         List<Tag> tagList = Arrays.stream(requestDTO.getTags())
-                .map(t -> {
-                    Tag tag = new Tag();
-                    tag.setName(t);
-                    return tag;
-                })
+                .map(Tag::new)
                 .collect(Collectors.toList());
-
         //Добавление поста
         Post post = new Post();
         post.setUserId(getCurrentUser().getId());
@@ -194,11 +189,7 @@ public class PostUseCase {
 
         //Маппинг тэгов из запроса
         List<Tag> tagList = Arrays.stream(requestDTO.getTags())
-                .map(t -> {
-                    Tag tag = new Tag();
-                    tag.setName(t);
-                    return tag;
-                })
+                .map(Tag::new)
                 .collect(Collectors.toList());
 
         //Редактирование и сохранение поста

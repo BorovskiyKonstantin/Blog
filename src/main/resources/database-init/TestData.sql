@@ -13,17 +13,17 @@ insert into posts (is_active, moderation_status, moderator_id, user_id, time, ti
 (false, default, NULL, 4, "2020-02-01", "NEW post By User3", "user3 bla bla bla", 0),
 --Подтвержденные модератором посты
 (true, "ACCEPTED", 1, 2, "2020-02-01 00:00:00", "ACCEPTED post By User", "user bla bla bla", 30),
-(true, "ACCEPTED", 2, 3, "2020-02-02 01:00:00", "ACCEPTED post By User2", "user2 bla bla bla", 40),
+(true, "ACCEPTED", 1, 3, "2020-02-02 01:00:00", "ACCEPTED post By User2", "user2 bla bla bla", 40),
 (false, "ACCEPTED", 1, 4, "2020-02-02 02:00:00", "ACCEPTED post By User3", "user3 bla bla bla", 0),
 --Отклоненные модератором посты
 (true, "DECLINED", 1, 2, "2020-02-01 00:00:03", "DECLINED post By User", "user bla bla bla", 0),
-(true, "DECLINED", 2, 3, "2020-02-03", "DECLINED post By User2", "user2 bla bla bla", 12),
-(false, "DECLINED", 2, 4, "2020-02-03", "DECLINED post By User3", "user3 bla bla bla", 0),
+(true, "DECLINED", 1, 3, "2020-02-03", "DECLINED post By User2", "user2 bla bla bla", 12),
+(false, "DECLINED", 1, 4, "2020-02-03", "DECLINED post By User3", "user3 bla bla bla", 0),
 --Различные типы постов для пользователя с id=1
 (true, default, NULL, 1, "2020-02-01", "active NEW post by UserId=1", "user bla bla bla", 150),
 (false, default, NULL, 1, "2020-02-01", "inactive NEW post by UserId=1", "user bla bla bla", 0),
-(true, "ACCEPTED", NULL, 1, "2020-02-01", "active ACCEPTED post by UserId=1", "user bla bla bla", 150),
-(false, "ACCEPTED", NULL, 1, "2020-02-01", "inactive ACCEPTED post by UserId=1", "user bla bla bla", 0),
+(true, "ACCEPTED", 1, 1, "2020-02-01", "active ACCEPTED post by UserId=1", "user bla bla bla", 150),
+(false, "ACCEPTED", 1, 1, "2020-02-01", "inactive ACCEPTED post by UserId=1", "user bla bla bla", 0),
 (true, "DECLINED", NULL, 1, "2020-02-01", "active DECLINED post by UserId=1", "user bla bla bla", 150),
 (false, "DECLINED", NULL, 1, "2020-02-01", "inactive DECLINED post by UserId=1", "user bla bla bla", 0);
 
@@ -74,5 +74,11 @@ insert into tag2post (post_id, tag_id) VALUES
 (1,2),
 (1,3),
 (2,1),
+(2,2),
+(2,3),
+(4,1),
+(4,2),
+(4,3),
+(5,1),
 (5,2),
-(5,3);
+(12,1);
