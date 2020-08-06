@@ -43,9 +43,11 @@ public class PostUseCase {
 
 
     public PostResponseDTO getPosts(int offset, int limit, String mode) {
+        //TODO сделать пагинацию либо заменить на 2 запроса в БД
         List<Post> posts = postRepositoryPort.getAllPosts(mode);
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
+        //todo==============================================
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
         return new PostResponseDTO(count, postInfoDTOList);
     }
@@ -69,15 +71,10 @@ public class PostUseCase {
     public PostInfoDTO getPostById(Integer id){
         //Поиск поста в БД по id
         Post post = postRepositoryPort.getActivePostById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found"));
+                .orElseThrow();
 
-        //Создание DTO из поста
-        PostInfoDTO postInfoDTO = postToDTO(post);
-
-        //Получение комментариев к посту
+        //Получение DTO комментариев к посту
         List<PostComment> comments = postCommentsRepositoryPort.getCommentsByPostId(post.getId());
-
-        //Создание списка DTO комментариев
         List<Object> commentsDTO = new ArrayList<>();
         comments.forEach(postComment -> {
             User user = userRepositoryPort.findById(postComment.getUserId()).orElseThrow();
@@ -92,10 +89,27 @@ public class PostUseCase {
             commentsDTO.add(postCommentDTO);
         });
 
+        //Получение DTO тэгов к посту
+        List<Tag> tags = post.getTags();
+        List<String> tagsDTO = tags.stream().map(Tag::getName).collect(Collectors.toList());
+
+        //Создание DTO из поста
+        PostInfoDTO postInfoDTO = postToDTO(post);
         postInfoDTO.setComments(commentsDTO);   //Добавление списка DTO комментариев к DTO поста
-        List<Tag> tags = post.getTags();    //Получение тэгов к посту
-        List<String> tagNames = tags.stream().map(Tag::getName).collect(Collectors.toList());
-        postInfoDTO.setTags(tagNames);  //Добавление тэгов к DTO поста
+        postInfoDTO.setTags(tagsDTO);  //Добавление тэгов к DTO поста
+
+        /**
+         * todo:
+         *      эти строки добавлены в связи с изменением параметров запросов/ответов в фронте.
+         *      Разделить postInfoDTO на 2 класса:
+         *      1. PostDTO - для списка List<PostDTO> внутри PostResponseDTO
+         *      2. PostInfoDTO - для тела ответа на запрос фронта
+         */
+        postInfoDTO.setActive(true);
+        postInfoDTO.setText(postInfoDTO.getAnnounce());
+        postInfoDTO.setAnnounce(null);
+        postInfoDTO.setCommentCount(null);
+        //todo ==============================================
 
         return postInfoDTO;
     }
@@ -220,7 +234,7 @@ public class PostUseCase {
     //Создание DTO из поста
     private PostInfoDTO postToDTO(Post post){
         Integer postId = post.getId();
-        String time = postTimeToString(post.getTime());
+        Timestamp time = post.getTime();
         User user = userRepositoryPort.findById(post.getUserId()).orElseThrow();
         Integer userId = user.getId();
         String userName = user.getName();
@@ -243,28 +257,6 @@ public class PostUseCase {
                 commentCount,
                 viewCount
         );
-    }
-
-    private String postTimeToString(Timestamp postTime){
-        LocalDateTime postDateTime = postTime.toLocalDateTime();
-        LocalDateTime now = LocalDateTime.now();
-        int daysAgo = now.getDayOfYear() - postDateTime.getDayOfYear();
-
-        String date;
-        switch (daysAgo) {
-            case 0:
-                date = "Сегодня";
-                break;
-            case 1:
-                date = "Вчера";
-                break;
-            default:
-                date = postDateTime.format(DateTimeFormatter.ISO_DATE);
-        }
-        int hour = postDateTime.getHour();
-        int minute = postDateTime.getMinute();
-        String time = String.format("%s, %02d:%02d", date, hour, minute);
-        return time;
     }
 
     private User getCurrentUser(){

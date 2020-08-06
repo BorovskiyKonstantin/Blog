@@ -13,5 +13,10 @@ spring.datasource.data: classpath:database-init/TestData.sql
 # время хранения капч в БД
 captcha.duration: 1h
 
-upload.dir: src/main/resources/upload/
+# настройки для загрузки картинок
+upload.dir: src/main/resources/static/post/
+upload.image-max-size: 5 #(MB)
+
+spring.servlet.multipart.max-request-size: 20MB    # максимальный общий размер любого запроса (default 10MB)
+spring.servlet.multipart.max-file-size: 10MB    # максимальный размер любого файла в запросе (default 1MB)
 

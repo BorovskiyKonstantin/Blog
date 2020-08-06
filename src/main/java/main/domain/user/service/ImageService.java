@@ -1,6 +1,8 @@
 package main.domain.user.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,6 +10,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -15,38 +19,47 @@ public class ImageService {
 
     @Value("${upload.dir}")
     private String uploadDirPath;
+    @Value("${upload.image-max-size}")
+    private Integer IMAGE_MAX_SIZE;
 
     //Сохранение изображения
-    public String uploadImage(MultipartFile image) {
-        //Имя файла
-        String fileName = image.getOriginalFilename();
+    public ResponseEntity<Object> uploadImage(MultipartFile image) {
 
-        //Расширение файла
-        String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+        String fileName = image.getOriginalFilename();  //Имя файла
+        String fileExtension = fileName.substring(fileName.lastIndexOf("."));   //Расширение файла
+        String hashCode = generateCode(15);     //Случайный кэш
+        double sizeMB = (double) image.getSize() / 1024 / 1024;  //Размер файла в MB
 
-        //Случайный кэш
-        String hashCode = generateCode(15);
+        //Поиск ошибок в запросе
+        Map<String, Object> errors = new LinkedHashMap<>();     //Лог ошибок
+        //Проверка размера файла
+        if (sizeMB > IMAGE_MAX_SIZE)
+            errors.put("image", "Размер файла превышает допустимый размер");
 
-        //Новое имя файла
-        fileName = hashCode + fileExtension;
+        //Проверка расширения файла
+        if (!fileExtension.equals(".jpg") && !fileExtension.equals(".png"))
+            errors.put("extension", "Формат изображения должен быть .jpg или .png");
 
-        //Сохранение в папку upload
-        String uploadPath = uploadDirPath + fileName;
-        writeImage(image, new File(uploadPath));
-
-        //Сохранения изображения в 3 подпапки
-        File[] copyFiles = new File[]{
-                new File(uploadDirPath + hashCode.substring(0, 5) + "/" + fileName),
-                new File(uploadDirPath + hashCode.substring(5, 10) + "/" + fileName),
-                new File(uploadDirPath + hashCode.substring(10, 15) + "/" + fileName)
-        };
-
-        for (File copyFile : copyFiles){
-                copyFile.getParentFile().mkdirs();
-                writeImage(image, copyFile);
+        //Возврат ответа 400, если обнаружены ошибки
+        if (errors.size() > 0) {
+            Map<String, Object> errorDTO = new LinkedHashMap<>();
+            errorDTO.put("result", false);
+            errorDTO.put("errors", errors);
+            return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
         }
 
-        return uploadPath;
+        //Сохранение в папку upload
+        fileName = hashCode + fileExtension;    //Новое имя файла
+        String subDirsPath = //Путь 3 подпапок
+                hashCode.substring(0, 5) + "/"
+                        + hashCode.substring(5, 10) + "/"
+                        + hashCode.substring(10, 15) + "/";
+        String uploadFilePath = uploadDirPath + subDirsPath + fileName;
+        File uploadFile = new File(uploadFilePath);
+        uploadFile.getParentFile().mkdirs();  //создание подпапок для файла
+        writeImage(image, uploadFile);
+
+        return new ResponseEntity<>(subDirsPath + fileName, HttpStatus.OK);
     }
 
     private String generateCode(int length) {
@@ -61,7 +74,7 @@ public class ImageService {
         return builder.toString();
     }
 
-    private void writeImage(MultipartFile image, File dstFile){
+    private void writeImage(MultipartFile image, File dstFile) {
         try {
             byte[] bytes = image.getBytes();
             BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(dstFile));

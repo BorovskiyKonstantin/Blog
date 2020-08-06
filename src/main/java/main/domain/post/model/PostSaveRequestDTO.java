@@ -1,5 +1,6 @@
 package main.domain.post.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -8,19 +9,10 @@ import java.util.Date;
 
 @Data
 public class PostSaveRequestDTO {
+    @JsonProperty("timestamp")
     private Timestamp time;
     private boolean active;
     private String title;
     private String[] tags;
     private String text;
-
-    public void setTime(String time) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            Date parsedDate = dateFormat.parse(time);
-            this.time = new Timestamp(parsedDate.getTime());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
 }

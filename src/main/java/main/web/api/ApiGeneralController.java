@@ -11,6 +11,9 @@ import main.domain.tag.model.TagResponseDTO;
 import main.domain.tag.usecase.TagUseCase;
 import main.domain.user.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,15 +60,15 @@ public class ApiGeneralController {
         blogInfoJson.put("title", "DevPub");
         blogInfoJson.put("subtitle", "Рассказы   разработчиков");
         blogInfoJson.put("phone", "+7   903   666-44-55");
-        blogInfoJson.put("email", "mail@mail.ru");
+        blogInfoJson.put("email", "user@example.ru");
         blogInfoJson.put("copyright", "Дмитрий   Сергеев");
         blogInfoJson.put("copyrightFrom", "2005");
         return blogInfoJson;
     }
 
     //2. Загрузка   изображений   -   POST   /api/image
-    @PostMapping(value = "/image", produces = "text/plain")
-    public String uploadImage(@RequestParam("image")MultipartFile image){
+    @PostMapping(value = "/image", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
+    public ResponseEntity<Object> uploadImage(@RequestParam("image")MultipartFile image){
         return imageService.uploadImage(image);
     }
 

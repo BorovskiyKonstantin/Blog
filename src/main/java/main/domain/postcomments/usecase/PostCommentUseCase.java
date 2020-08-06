@@ -42,10 +42,12 @@ public class PostCommentUseCase {
         }
 
         //Бросить exception, если не найден активный пост с переданным id
-        postRepositoryPort.getActivePostById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        postRepositoryPort.getActivePostById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
         //Бросить exception, если у поста не найден комментарий с id = parentId
         if (parentId != null) {
-            postCommentsRepositoryPort.findCommentByIdForPostWithId(parentId, postId).orElseThrow();
+            postCommentsRepositoryPort.findCommentByIdForPostWithId(parentId, postId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
         }
 
         int userId = userUseCase.getCurrentUser().getId();
