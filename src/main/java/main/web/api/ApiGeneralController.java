@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import main.domain.globalsetting.model.GlobalSettingDto;
 import main.domain.globalsetting.usecase.GlobalSettingUseCase;
+import main.domain.post.model.PostModerationDTO;
+import main.domain.post.usecase.PostUseCase;
 import main.domain.postcomments.model.CommentRequestDTO;
 import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.usecase.PostCommentUseCase;
@@ -27,7 +29,7 @@ import javax.validation.Valid;
  * + 2. Загрузка   изображений   -   POST   /api/image
  * + 3. Отправка   комментария   к   посту   -   POST   /api/comment/
  * + 4. Получение   списка   тэгов   -   GET   /api/tag/
- *   5. Модерация   поста   -   POST   /api/moderation
+ * + 5. Модерация   поста   -   POST   /api/moderation
  * - 6. Календарь   (количества   публикаций)   -   GET   /api/calendar/
  *   7. Редактирование   моего   профиля   -   POST   /api/profile/my
  *   8. Моя   статистика   -   GET   /api/statistics/my
@@ -43,13 +45,15 @@ public class ApiGeneralController {
     private TagUseCase tagUseCase;
     private PostCommentUseCase postCommentUseCase;
     private ImageService imageService;
+    private PostUseCase postUseCase;
 
     @Autowired
-    public ApiGeneralController(GlobalSettingUseCase globalSettingUseCase, TagUseCase tagUseCase, PostCommentUseCase postCommentUseCase, ImageService imageService) {
+    public ApiGeneralController(GlobalSettingUseCase globalSettingUseCase, TagUseCase tagUseCase, PostCommentUseCase postCommentUseCase, ImageService imageService, PostUseCase postUseCase) {
         this.globalSettingUseCase = globalSettingUseCase;
         this.tagUseCase = tagUseCase;
         this.postCommentUseCase = postCommentUseCase;
         this.imageService = imageService;
+        this.postUseCase = postUseCase;
     }
 
     //    1. Общие   данные   блога   -   GET   /api/init
@@ -83,6 +87,13 @@ public class ApiGeneralController {
     @GetMapping(value = "/tag")
     public TagResponseDTO getTags(@RequestParam(name = "query", required = false) String query){
         return new TagResponseDTO(tagUseCase.getTags(query));
+    }
+
+    //5. Модерация   поста   -   POST   /api/moderation
+    @PostMapping("/moderation")
+    @Secured("ROLE_MODERATOR")
+    public Object moderation (@RequestBody PostModerationDTO requestDTO){
+        return postUseCase.moderation(requestDTO);
     }
 
     //    10. Получение   настроек   -   GET   /api/settings/

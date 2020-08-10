@@ -3,6 +3,7 @@ package main.dao.post;
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.post.model.PostInfoDTO;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -61,4 +62,13 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
 
     @Query(value = "SELECT count(*) FROM posts p WHERE " + activePostsFilter, nativeQuery = true)
     Integer getActivePostsCount();
+
+
+    @Modifying
+    @Query(value = "UPDATE posts p \n" +
+            "SET moderation_status = :status , moderator_id = :moderatorId\n" +
+            "WHERE id = :postId", nativeQuery = true)
+    int setPostModeration(@Param("postId")int postId,
+                          @Param("status") String moderationStatus,
+                          @Param("moderatorId")int moderatorId);
 }

@@ -28,4 +28,6 @@ public interface PostRepositoryPort {
     List<Post> getCurrentUserPosts(int currentUserId, String status);
 
     Post save(Post post);
+
+    int setPostModeration(int postId, ModerationStatus moderationStatus, int moderatorId);
 }

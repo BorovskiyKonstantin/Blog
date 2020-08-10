@@ -2,10 +2,7 @@ package main.domain.post.usecase;
 
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
-import main.domain.post.model.PostInfoDTO;
-import main.domain.post.model.PostSaveRequestDTO;
-import main.domain.post.model.PostSaveResponseDTO;
-import main.domain.post.model.PostResponseDTO;
+import main.domain.post.model.*;
 import main.domain.post.port.PostRepositoryPort;
 import main.domain.postcomments.entity.PostComment;
 import main.domain.postcomments.model.CommentResponseDTO;
@@ -13,17 +10,14 @@ import main.domain.postcomments.port.PostCommentsRepositoryPort;
 import main.domain.tag.entity.Tag;
 import main.domain.user.entity.User;
 import main.domain.user.port.UserRepositoryPort;
+import main.domain.user.usecase.UserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,14 +27,15 @@ public class PostUseCase {
     private PostRepositoryPort postRepositoryPort;
     private UserRepositoryPort userRepositoryPort;
     private PostCommentsRepositoryPort postCommentsRepositoryPort;
+    private UserUseCase userUseCase;
 
     @Autowired
-    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort) {
+    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort, UserUseCase userUseCase) {
         this.postRepositoryPort = postRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
-        this.postCommentsRepositoryPort = postCommentsRepositoryPort;;
+        this.postCommentsRepositoryPort = postCommentsRepositoryPort;
+        this.userUseCase = userUseCase;
     }
-
 
     public PostResponseDTO getPosts(int offset, int limit, String mode) {
         //TODO сделать пагинацию либо заменить на 2 запроса в БД
@@ -259,9 +254,36 @@ public class PostUseCase {
         );
     }
 
+    public Object moderation(PostModerationDTO requestDTO) {
+        //Проверка: является ли пользователь модератором?
+        User currentUser = getCurrentUser();
+        if(!currentUser.isModerator())
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        int postId = requestDTO.getPostId();
+        String decision = requestDTO.getDecision();
+
+        ModerationStatus status;
+        switch (decision){
+            case "accept":
+                status = ModerationStatus.ACCEPTED;
+                break;
+            case "decline":
+                status = ModerationStatus.DECLINED;
+                break;
+            default:
+                return Collections.singletonMap("result", false);
+        }
+
+        int updateResult = postRepositoryPort.setPostModeration(postId, status, currentUser.getId());
+        if(updateResult == 0)
+            return Collections.singletonMap("result", false);
+        else
+            return Collections.singletonMap("result", true);
+    }
+
     private User getCurrentUser(){
-        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepositoryPort.findUserByEmail(userEmail).orElseThrow(()->new UsernameNotFoundException("User Not Authorized"));
+        return userUseCase.getCurrentUser();
     }
 
 }

@@ -111,10 +111,15 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
 
     @Override
     public Post save(Post post) {
+        //todo сохранение тэгов создает запросы и не всегда требуется
         List<Tag> tagsA = post.getTags();
         //сохранить тэги, т.к. поле name уникально
         tagsA.forEach(t -> tagRepositoryPort.save(t));
         return postRepository.save(post);
     }
 
+    @Override
+    public int setPostModeration(int postId, ModerationStatus moderationStatus, int moderatorId) {
+        return postRepository.setPostModeration(postId, moderationStatus.name(), moderatorId);
+    }
 }
