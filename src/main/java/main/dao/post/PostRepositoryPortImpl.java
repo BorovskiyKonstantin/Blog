@@ -8,8 +8,8 @@ import main.domain.tag.port.TagRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
+import java.math.BigInteger;
+import java.util.*;
 
 @Component
 public class PostRepositoryPortImpl implements PostRepositoryPort {
@@ -121,5 +121,20 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     @Override
     public int setPostModeration(int postId, ModerationStatus moderationStatus, int moderatorId) {
         return postRepository.setPostModeration(postId, moderationStatus.name(), moderatorId);
+    }
+
+    @Override
+    public List<Integer> getYearsOfPublications() {
+        return postRepository.getYearsOfPublications();
+    }
+
+    @Override
+    public Map<String, Integer> getPublicationsCountByYear(Integer year) {
+        List<Object[]> publicationsCountByYear = postRepository.getPublicationsCountByYear(year);
+        Map<String, Integer> resultMap = new LinkedHashMap<>();
+        publicationsCountByYear.forEach(e -> resultMap.put(
+                (e[0]).toString(), ((BigInteger)e[1]).intValue())
+        );
+        return resultMap;
     }
 }

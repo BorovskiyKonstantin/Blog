@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -286,4 +287,13 @@ public class PostUseCase {
         return userUseCase.getCurrentUser();
     }
 
+    public CalendarResponseDTO getCalendar(Integer year) {
+        //Установить текущий год, если параметр не передан
+        if (year == null) year = LocalDate.now().getYear();
+        //Получить список годов с публикациями
+        List<Integer> years = postRepositoryPort.getYearsOfPublications();
+        //Получить даты с количеством публикаций за определенный год
+        Map<String, Integer> posts = postRepositoryPort.getPublicationsCountByYear(year);
+        return new CalendarResponseDTO(years,posts);
+    }
 }

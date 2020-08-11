@@ -2,14 +2,12 @@ package main.dao.post;
 
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
-import main.domain.post.model.PostInfoDTO;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,4 +69,13 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     int setPostModeration(@Param("postId")int postId,
                           @Param("status") String moderationStatus,
                           @Param("moderatorId")int moderatorId);
+
+    @Query(value = "SELECT DISTINCT YEAR(time) FROM posts p\n" +
+            "WHERE " + activePostsFilter + " ORDER BY p.time" , nativeQuery = true)
+    List<Integer> getYearsOfPublications();
+
+    @Query(value = "SELECT DATE(time) as date, count(DATE(time)) as count FROM posts p\n" +
+            "WHERE YEAR(time) = :year " +
+            "AND " + activePostsFilter + " GROUP BY date ORDER BY YEAR(date), count DESC", nativeQuery = true)
+    List<Object[]> getPublicationsCountByYear(@Param("year") Integer year);
 }

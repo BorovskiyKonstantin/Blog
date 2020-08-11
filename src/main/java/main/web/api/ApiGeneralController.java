@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import main.domain.globalsetting.model.GlobalSettingDto;
 import main.domain.globalsetting.usecase.GlobalSettingUseCase;
+import main.domain.post.model.CalendarResponseDTO;
 import main.domain.post.model.PostModerationDTO;
 import main.domain.post.usecase.PostUseCase;
 import main.domain.postcomments.model.CommentRequestDTO;
@@ -13,7 +14,6 @@ import main.domain.tag.model.TagResponseDTO;
 import main.domain.tag.usecase.TagUseCase;
 import main.domain.user.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -30,7 +30,7 @@ import javax.validation.Valid;
  * + 3. Отправка   комментария   к   посту   -   POST   /api/comment/
  * + 4. Получение   списка   тэгов   -   GET   /api/tag/
  * + 5. Модерация   поста   -   POST   /api/moderation
- * - 6. Календарь   (количества   публикаций)   -   GET   /api/calendar/
+ * + 6. Календарь   (количества   публикаций)   -   GET   /api/calendar/
  *   7. Редактирование   моего   профиля   -   POST   /api/profile/my
  *   8. Моя   статистика   -   GET   /api/statistics/my
  * ? 9. Статистика   по   всему   блогу   -   GET   /api/statistics/all
@@ -94,6 +94,12 @@ public class ApiGeneralController {
     @Secured("ROLE_MODERATOR")
     public Object moderation (@RequestBody PostModerationDTO requestDTO){
         return postUseCase.moderation(requestDTO);
+    }
+
+    //6. Календарь   (количества   публикаций)   -   GET   /api/calendar/
+    @GetMapping("/calendar")
+    public CalendarResponseDTO calendar (@RequestParam(value = "year", required = false) Integer year){
+        return postUseCase.getCalendar(year);
     }
 
     //    10. Получение   настроек   -   GET   /api/settings/

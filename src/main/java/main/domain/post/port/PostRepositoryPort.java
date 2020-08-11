@@ -4,6 +4,7 @@ import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface PostRepositoryPort {
@@ -30,4 +31,8 @@ public interface PostRepositoryPort {
     Post save(Post post);
 
     int setPostModeration(int postId, ModerationStatus moderationStatus, int moderatorId);
+
+    List<Integer> getYearsOfPublications();
+
+    Map<String, Integer> getPublicationsCountByYear(Integer year);
 }

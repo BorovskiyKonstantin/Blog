@@ -15,6 +15,13 @@ insert into posts (is_active, moderation_status, moderator_id, user_id, time, ti
 (true, "ACCEPTED", 1, 2, "2020-02-01 00:00:00", "ACCEPTED post By User", "user bla bla bla", 30),
 (true, "ACCEPTED", 1, 3, "2020-02-02 01:00:00", "ACCEPTED post By User2", "user2 bla bla bla", 40),
 (false, "ACCEPTED", 1, 4, "2020-02-02 02:00:00", "ACCEPTED post By User3", "user3 bla bla bla", 0),
+
+(true, "ACCEPTED", 1, 2, "2000-02-01 00:00:00", "ACCEPTED post1 By User", "user bla bla bla", 0),
+(true, "ACCEPTED", 1, 3, "2005-02-02 01:00:00", "ACCEPTED post1 By User2", "user2 bla bla bla", 0),
+(false, "ACCEPTED", 1, 4, "2018-02-02 02:00:00", "ACCEPTED post1 By User3", "user3 bla bla bla", 0),
+(true, "ACCEPTED", 1, 2, "2018-02-01 00:00:00", "ACCEPTED post2 By User", "user bla bla bla", 0),
+(true, "ACCEPTED", 1, 3, "2019-02-02 01:00:00", "ACCEPTED post2 By User2", "user2 bla bla bla", 0),
+(false, "ACCEPTED", 1, 4, "2019-02-02 02:00:00", "ACCEPTED post2 By User3", "user3 bla bla bla", 0),
 --Отклоненные модератором посты
 (true, "DECLINED", 1, 2, "2020-02-01 00:00:03", "DECLINED post By User", "user bla bla bla", 0),
 (true, "DECLINED", 1, 3, "2020-02-03", "DECLINED post By User2", "user2 bla bla bla", 12),
