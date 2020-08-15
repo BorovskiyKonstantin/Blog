@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedOutputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Random;
 public class ImageService {
 
     @Value("${upload.dir}")
-    private String uploadDirPath;
+    private String uploadRootDirPath;
     @Value("${upload.image-max-size}")
     private Integer IMAGE_MAX_SIZE;
 
@@ -26,8 +26,8 @@ public class ImageService {
     public ResponseEntity<Object> uploadImage(MultipartFile image) {
 
         String fileName = image.getOriginalFilename();  //Имя файла
-        String fileExtension = fileName.substring(fileName.lastIndexOf("."));   //Расширение файла
-        String hashCode = generateCode(15);     //Случайный кэш
+        String fileFormat = fileName.substring(fileName.lastIndexOf(".") + 1);   //Расширение файла без точки
+        String hashCode = generateCode(15);     //Случайный хэш
         double sizeMB = (double) image.getSize() / 1024 / 1024;  //Размер файла в MB
 
         //Поиск ошибок в запросе
@@ -37,7 +37,7 @@ public class ImageService {
             errors.put("image", "Размер файла превышает допустимый размер");
 
         //Проверка расширения файла
-        if (!fileExtension.equals(".jpg") && !fileExtension.equals(".png"))
+        if (!fileFormat.equals("jpg") && !fileFormat.equals("png"))
             errors.put("extension", "Формат изображения должен быть .jpg или .png");
 
         //Возврат ответа 400, если обнаружены ошибки
@@ -49,15 +49,17 @@ public class ImageService {
         }
 
         //Сохранение в папку upload
-        fileName = hashCode + fileExtension;    //Новое имя файла
         String subDirsPath = //Путь 3 подпапок
-                hashCode.substring(0, 5) + "/"
-                        + hashCode.substring(5, 10) + "/"
-                        + hashCode.substring(10, 15) + "/";
-        String uploadFilePath = uploadDirPath + subDirsPath + fileName;
+                hashCode.substring(0, 5) + "/" + hashCode.substring(5, 10) + "/" + hashCode.substring(10, 15) + "/";
+        String uploadFilePath = uploadRootDirPath + subDirsPath + hashCode + "." + fileFormat;
         File uploadFile = new File(uploadFilePath);
         uploadFile.getParentFile().mkdirs();  //создание подпапок для файла
-        writeImage(image, uploadFile);
+        try {
+            //чтение и запись в файл
+            ImageIO.write(ImageIO.read(image.getInputStream()), fileFormat, uploadFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return new ResponseEntity<>(subDirsPath + fileName, HttpStatus.OK);
     }
@@ -74,15 +76,42 @@ public class ImageService {
         return builder.toString();
     }
 
-    private void writeImage(MultipartFile image, File dstFile) {
+    //обрезка и сохранение фото профиля
+    public String uploadProfilePhoto(MultipartFile image)  {
+        String fileName = image.getOriginalFilename();  //Имя файла
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);   //Расширение файла без точки
+        String hashCode = generateCode(15);     //Случайный хэш
+        String subDirsPath = //Путь 3 подпапок xx/yy/zz/
+                hashCode.substring(0, 5) + "/" + hashCode.substring(5, 10) + "/" + hashCode.substring(10, 15) + "/";
+
         try {
-            byte[] bytes = image.getBytes();
-            BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(dstFile));
-            os.write(bytes);
-            os.flush();
-            os.close();
+            //прочитать изображение и обрезать до 36x36 пикселей
+            BufferedImage img = ImageIO.read(image.getInputStream());
+            img = img.getSubimage(0, 0, 36, 36);
+
+            //запись в файл
+            File uploadFile = new File(uploadRootDirPath + subDirsPath + hashCode + "." + fileExtension);
+            uploadFile.getParentFile().mkdirs();  //создание подпапок для файла
+            ImageIO.write(img, fileExtension, uploadFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return subDirsPath + hashCode + "." + fileExtension;
     }
+
+    public void deleteImage(String filePath) {
+        String photoPath = uploadRootDirPath + filePath;
+        clean(new File(photoPath), uploadRootDirPath);
+    }
+    private static void clean(File file, String rootDir){
+        if (file.isDirectory())
+        if (file.listFiles().length != 0) return;
+        if (file.getName().equals(rootDir)) return;
+
+        file.delete();
+        File parentFile = file.getParentFile();
+        clean(parentFile, rootDir);
+    }
+
 }

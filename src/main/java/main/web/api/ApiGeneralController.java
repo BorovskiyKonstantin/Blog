@@ -12,7 +12,9 @@ import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.usecase.PostCommentUseCase;
 import main.domain.tag.model.TagResponseDTO;
 import main.domain.tag.usecase.TagUseCase;
+import main.domain.user.model.profile.ChangeProfileRequestDTO;
 import main.domain.user.service.ImageService;
+import main.domain.user.usecase.UserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +33,7 @@ import javax.validation.Valid;
  * + 4. Получение   списка   тэгов   -   GET   /api/tag/
  * + 5. Модерация   поста   -   POST   /api/moderation
  * + 6. Календарь   (количества   публикаций)   -   GET   /api/calendar/
- *   7. Редактирование   моего   профиля   -   POST   /api/profile/my
+ * + 7. Редактирование   моего   профиля   -   POST   /api/profile/my
  *   8. Моя   статистика   -   GET   /api/statistics/my
  * ? 9. Статистика   по   всему   блогу   -   GET   /api/statistics/all
  * + 10. Получение   настроек   -   GET   /api/settings/
@@ -46,14 +48,16 @@ public class ApiGeneralController {
     private PostCommentUseCase postCommentUseCase;
     private ImageService imageService;
     private PostUseCase postUseCase;
+    private UserUseCase userUseCase;
 
     @Autowired
-    public ApiGeneralController(GlobalSettingUseCase globalSettingUseCase, TagUseCase tagUseCase, PostCommentUseCase postCommentUseCase, ImageService imageService, PostUseCase postUseCase) {
+    public ApiGeneralController(GlobalSettingUseCase globalSettingUseCase, TagUseCase tagUseCase, PostCommentUseCase postCommentUseCase, ImageService imageService, PostUseCase postUseCase, UserUseCase userUseCase) {
         this.globalSettingUseCase = globalSettingUseCase;
         this.tagUseCase = tagUseCase;
         this.postCommentUseCase = postCommentUseCase;
         this.imageService = imageService;
         this.postUseCase = postUseCase;
+        this.userUseCase = userUseCase;
     }
 
     //    1. Общие   данные   блога   -   GET   /api/init
@@ -100,6 +104,24 @@ public class ApiGeneralController {
     @GetMapping("/calendar")
     public CalendarResponseDTO calendar (@RequestParam(value = "year", required = false) Integer year){
         return postUseCase.getCalendar(year);
+    }
+
+    //7. Редактирование   моего   профиля   -   POST   /api/profile/my
+    // 7.1. Изменение профиля - multipart/form-data
+    @PostMapping(value = "/profile/my", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> changeProfileMultipart(
+            @RequestPart(value = "email", required = false) String email,
+            @RequestPart(value = "name", required = false) String name,
+            @RequestPart(value = "password", required = false) String password,
+            @RequestPart(value = "photo", required = false) MultipartFile photo,
+            @RequestPart(value = "removePhoto", required = false) String removePhoto){
+        return userUseCase.editProfile(email, name, password, photo, Integer.parseInt(removePhoto));
+    }
+
+    // 7.2. Изменение профиля - application/json
+    @PostMapping(value = "/profile/my", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> changeProfileApplicationJson(@RequestBody ChangeProfileRequestDTO requestDTO){
+        return userUseCase.editProfile(requestDTO.getEmail(), requestDTO.getName(), requestDTO.getPassword(), null, requestDTO.getRemovePhoto());
     }
 
     //    10. Получение   настроек   -   GET   /api/settings/
