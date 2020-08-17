@@ -30,7 +30,7 @@ public interface PostRepositoryPort {
 
     List<Post> getCurrentUserPosts(int currentUserId, ModerationStatus moderationStatus, boolean isActive);
 
-    int getCurrentUserPostsCount(int id, ModerationStatus accepted, boolean b);
+    int getCurrentUserPostsCount(Integer userId, ModerationStatus accepted, boolean b);
 
     Post save(Post post);
 
@@ -40,9 +40,9 @@ public interface PostRepositoryPort {
 
     Map<String, Integer> getPublicationsCountByYear(Integer year);
 
-    int getVotesCountForUser(int id, PostVoteType voteType);
+    int getVotesCount(Integer userId, PostVoteType voteType);
 
-    int getViewsCountForUser(int id);
+    int getViewsCount(Integer userId);
 
-    Timestamp getFirstPublicationTimeForUser(int id);
+    Timestamp getFirstPublicationTimeForUser(Integer userId);
 }

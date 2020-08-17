@@ -22,8 +22,8 @@ public interface PostVoteRepository extends CrudRepository<PostVote,Integer> {
 
     @Query(value = "SELECT count(*) FROM PostVote pv\n" +
             "JOIN Post p ON pv.id = p.id\n" +
-            "WHERE p.isActive = true AND p.moderationStatus = 'ACCEPTED' AND p.userId = :id\n" +
+            "WHERE p.isActive = true AND p.moderationStatus = 'ACCEPTED' AND (:id IS NULL OR p.userId = :id)\n" +
             "AND pv.value = :voteType" )
-    int getVoteCountForUser(@Param("id")int id,
+    int getVoteCountForUser(@Param("id")Integer id,
                             @Param("voteType")PostVoteType voteType);
 }

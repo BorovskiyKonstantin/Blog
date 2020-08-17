@@ -325,24 +325,30 @@ public class PostUseCase {
     }
 
     public Map<String, Object> statisticsMy() {
+        return getStatistics(getCurrentUser().getId());
+    }
+
+    public Object statisticsAll() {
+        return getStatistics(null);
+    }
+
+    private Map<String, Object> getStatistics(Integer userId){
         int postCount = 0;
         int likesCount = 0;
         int dislikesCount = 0;
         int viewsCount = 0;
         long firstPublication = 0;   //время в формате UTC
 
-        System.out.println("================================================================================================================");
-        User currentUser = getCurrentUser();
         //postCount
-        postCount = postRepositoryPort.getCurrentUserPostsCount(currentUser.getId(), ModerationStatus.ACCEPTED, true);
+        postCount = postRepositoryPort.getCurrentUserPostsCount(userId, ModerationStatus.ACCEPTED, true);
         //likesCount
-        likesCount = postRepositoryPort.getVotesCountForUser(currentUser.getId(), PostVoteType.LIKE);
+        likesCount = postRepositoryPort.getVotesCount(userId, PostVoteType.LIKE);
         //dislikesCount
-        dislikesCount = postRepositoryPort.getVotesCountForUser(currentUser.getId(), PostVoteType.DISLIKE);
+        dislikesCount = postRepositoryPort.getVotesCount(userId, PostVoteType.DISLIKE);
         //viewsCount
-        viewsCount = postRepositoryPort.getViewsCountForUser(currentUser.getId());
+        viewsCount = postRepositoryPort.getViewsCount(userId);
         //firstPublication
-        firstPublication = postRepositoryPort.getFirstPublicationTimeForUser(currentUser.getId()).getTime();
+        firstPublication = postRepositoryPort.getFirstPublicationTimeForUser(userId).getTime();
 
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("postsCount", postCount);

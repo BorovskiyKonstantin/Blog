@@ -59,8 +59,8 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
                                    @Param("isActive")boolean isActive,
                                    @Param("status")ModerationStatus moderationStatus);
 
-    @Query("SELECT count(*) FROM Post p WHERE p.userId = :userId AND p.isActive = :isActive AND (:status IS NULL or p.moderationStatus = :status)")
-    Integer getCurrentUserPostsCount(@Param("userId")int userId,
+    @Query("SELECT count(*) FROM Post p WHERE (:userId IS NULL OR p.userId = :userId) AND p.isActive = :isActive AND (:status IS NULL or p.moderationStatus = :status)")
+    int getCurrentUserPostsCount(@Param("userId")Integer userId,
                                      @Param("isActive")boolean isActive,
                                      @Param("status")ModerationStatus status);
 
@@ -86,11 +86,11 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     List<Object[]> getPublicationsCountByYear(@Param("year") Integer year);
 
     @Query(value = "SELECT sum(view_count) FROM posts p\n" +
-            "WHERE p.is_active = true AND moderation_status = 'ACCEPTED' AND p.user_id = :id", nativeQuery = true)
-    int getViewsCountForUser(@Param("id") int id);
+            "WHERE p.is_active = true AND moderation_status = 'ACCEPTED' AND (:id IS NULL OR p.user_id = :id)", nativeQuery = true)
+    int getViewsCountForUser(@Param("id") Integer id);
 
     @Query(value = "SELECT time FROM posts p\n" +
-            "WHERE p.is_active = true AND moderation_status = 'ACCEPTED' AND p.user_id = :id\n" +
+            "WHERE p.is_active = true AND moderation_status = 'ACCEPTED' AND (:id IS NULL OR p.user_id = :id)\n" +
             "ORDER BY time LIMIT 1", nativeQuery = true)
-    Timestamp getFirstPublicationTimeForUser(@Param("id")int id);
+    Timestamp getFirstPublicationTimeForUser(@Param("id")Integer id);
 }

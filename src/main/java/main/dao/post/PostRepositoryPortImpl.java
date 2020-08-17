@@ -92,8 +92,8 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public int getCurrentUserPostsCount(int currentUserId, ModerationStatus status, boolean isActive) {
-        return postRepository.getCurrentUserPostsCount(currentUserId, isActive, status);
+    public int getCurrentUserPostsCount(Integer userId, ModerationStatus status, boolean isActive) {
+        return postRepository.getCurrentUserPostsCount(userId, isActive, status);
     }
 
     @Override
@@ -126,17 +126,17 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public int getVotesCountForUser(int id, PostVoteType voteType) {
-        return postVoteRepository.getVoteCountForUser(id, voteType);
+    public int getVotesCount(Integer userId, PostVoteType voteType) {
+        return postVoteRepository.getVoteCountForUser(userId, voteType);
     }
 
     @Override
-    public int getViewsCountForUser(int id) {
-        return postRepository.getViewsCountForUser(id);
+    public int getViewsCount(Integer userId) {
+        return postRepository.getViewsCountForUser(userId);
     }
 
     @Override
-    public Timestamp getFirstPublicationTimeForUser(int id) {
-        return postRepository.getFirstPublicationTimeForUser(id);
+    public Timestamp getFirstPublicationTimeForUser(Integer userId) {
+        return postRepository.getFirstPublicationTimeForUser(userId);
     }
 }

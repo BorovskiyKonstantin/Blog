@@ -37,7 +37,7 @@ import java.util.Map;
  * + 6. Календарь   (количества   публикаций)   -   GET   /api/calendar/
  * + 7. Редактирование   моего   профиля   -   POST   /api/profile/my
  * + 8. Моя   статистика   -   GET   /api/statistics/my
- * ? 9. Статистика   по   всему   блогу   -   GET   /api/statistics/all
+ * + 9. Статистика   по   всему   блогу   -   GET   /api/statistics/all
  * + 10. Получение   настроек   -   GET   /api/settings/
  * + 11. Сохранение   настроек   -   PUT   /api/settings/
  */
@@ -130,6 +130,12 @@ public class ApiGeneralController {
     @GetMapping("/statistics/my")
     public ResponseEntity<Object> statisticsMy(){
         return new ResponseEntity<>(postUseCase.statisticsMy(), HttpStatus.OK);
+    }
+
+    //    9. Статистика   по   всему   блогу   -   GET   /api/statistics/all
+    @GetMapping("/statistics/all")
+    public ResponseEntity<Object> statisticsAll(){
+        return new ResponseEntity<>(postUseCase.statisticsAll(), HttpStatus.OK);
     }
 
     //    10. Получение   настроек   -   GET   /api/settings/
