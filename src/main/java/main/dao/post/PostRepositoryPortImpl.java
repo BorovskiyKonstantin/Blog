@@ -1,25 +1,30 @@
 package main.dao.post;
 
+import main.dao.postvote.PostVoteRepository;
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.post.port.PostRepositoryPort;
+import main.domain.postvote.entity.PostVoteType;
 import main.domain.tag.entity.Tag;
 import main.domain.tag.port.TagRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Component
 public class PostRepositoryPortImpl implements PostRepositoryPort {
     private PostRepository postRepository;
     private TagRepositoryPort tagRepositoryPort;
+    private PostVoteRepository postVoteRepository;
 
     @Autowired
-    public PostRepositoryPortImpl(PostRepository postRepository, TagRepositoryPort tagRepositoryPort) {
+    public PostRepositoryPortImpl(PostRepository postRepository, TagRepositoryPort tagRepositoryPort, PostVoteRepository postVoteRepository) {
         this.postRepository = postRepository;
         this.tagRepositoryPort = tagRepositoryPort;
+        this.postVoteRepository = postVoteRepository;
     }
 
     @Override
@@ -82,31 +87,13 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public List<Post> getCurrentUserPosts(int currentUserId, String status) {
-        boolean isActive;
-        ModerationStatus moderationStatus;
-        switch (status) {
-            case "inactive":
-                isActive = false;
-                moderationStatus = null;
-                break;
-            case "pending":
-                isActive = true;
-                moderationStatus = ModerationStatus.NEW;
-                break;
-            case "declined":
-                isActive = true;
-                moderationStatus = ModerationStatus.DECLINED;
-                break;
-            case "published":
-                isActive = true;
-                moderationStatus = ModerationStatus.ACCEPTED;
-                break;
-            default:
-                throw new IllegalArgumentException("Illegal argument: status");
-        }
+    public List<Post> getCurrentUserPosts(int currentUserId, ModerationStatus status, boolean isActive) {
+        return postRepository.getCurrentUserPosts(currentUserId, isActive, status);
+    }
 
-        return postRepository.getCurrentUserPosts(currentUserId, isActive, moderationStatus);
+    @Override
+    public int getCurrentUserPostsCount(int currentUserId, ModerationStatus status, boolean isActive) {
+        return postRepository.getCurrentUserPostsCount(currentUserId, isActive, status);
     }
 
     @Override
@@ -136,5 +123,20 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
                 (e[0]).toString(), ((BigInteger)e[1]).intValue())
         );
         return resultMap;
+    }
+
+    @Override
+    public int getVotesCountForUser(int id, PostVoteType voteType) {
+        return postVoteRepository.getVoteCountForUser(id, voteType);
+    }
+
+    @Override
+    public int getViewsCountForUser(int id) {
+        return postRepository.getViewsCountForUser(id);
+    }
+
+    @Override
+    public Timestamp getFirstPublicationTimeForUser(int id) {
+        return postRepository.getFirstPublicationTimeForUser(id);
     }
 }

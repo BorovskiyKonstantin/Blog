@@ -13,7 +13,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostInfoDTO {
     private Integer id;
-    private Timestamp timestamp;
+    private long timestamp;
     private Boolean active;
     private UserInfo user;
     private String title;
@@ -29,7 +29,7 @@ public class PostInfoDTO {
     public PostInfoDTO(Integer id, Timestamp timestamp, int userId, String userName, String title, String announce,
                        Integer likeCount, Integer dislikeCount, Integer commentCount, Integer viewCount) {
         this.id = id;   //post-id
-        this.timestamp = timestamp;   //post-time
+        this.timestamp = timestamp.getTime();   //post-time
         this.user = new UserInfo(userId, userName);   //user-id,name
         this.title = title;     //post-title
         this.announce = announce;   //post-text

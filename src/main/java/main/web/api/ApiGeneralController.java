@@ -16,6 +16,7 @@ import main.domain.user.model.profile.ChangeProfileRequestDTO;
 import main.domain.user.service.ImageService;
 import main.domain.user.usecase.UserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * для прочих запросов к API
@@ -34,7 +36,7 @@ import javax.validation.Valid;
  * + 5. Модерация   поста   -   POST   /api/moderation
  * + 6. Календарь   (количества   публикаций)   -   GET   /api/calendar/
  * + 7. Редактирование   моего   профиля   -   POST   /api/profile/my
- *   8. Моя   статистика   -   GET   /api/statistics/my
+ * + 8. Моя   статистика   -   GET   /api/statistics/my
  * ? 9. Статистика   по   всему   блогу   -   GET   /api/statistics/all
  * + 10. Получение   настроек   -   GET   /api/settings/
  * + 11. Сохранение   настроек   -   PUT   /api/settings/
@@ -122,6 +124,12 @@ public class ApiGeneralController {
     @PostMapping(value = "/profile/my", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> changeProfileApplicationJson(@RequestBody ChangeProfileRequestDTO requestDTO){
         return userUseCase.editProfile(requestDTO.getEmail(), requestDTO.getName(), requestDTO.getPassword(), null, requestDTO.getRemovePhoto());
+    }
+
+    //    8. Моя   статистика   -   GET   /api/statistics/my
+    @GetMapping("/statistics/my")
+    public ResponseEntity<Object> statisticsMy(){
+        return new ResponseEntity<>(postUseCase.statisticsMy(), HttpStatus.OK);
     }
 
     //    10. Получение   настроек   -   GET   /api/settings/

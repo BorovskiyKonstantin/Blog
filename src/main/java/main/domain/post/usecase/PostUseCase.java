@@ -7,6 +7,8 @@ import main.domain.post.port.PostRepositoryPort;
 import main.domain.postcomments.entity.PostComment;
 import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.port.PostCommentsRepositoryPort;
+import main.domain.postvote.entity.PostVoteType;
+import main.domain.postvote.port.PostVoteRepositoryPort;
 import main.domain.tag.entity.Tag;
 import main.domain.user.entity.User;
 import main.domain.user.port.UserRepositoryPort;
@@ -21,19 +23,22 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
 public class PostUseCase {
     private PostRepositoryPort postRepositoryPort;
     private UserRepositoryPort userRepositoryPort;
+    private PostVoteRepositoryPort postVoteRepositoryPort;
     private PostCommentsRepositoryPort postCommentsRepositoryPort;
     private UserUseCase userUseCase;
 
     @Autowired
-    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort, UserUseCase userUseCase) {
+    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostVoteRepositoryPort postVoteRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort, UserUseCase userUseCase) {
         this.postRepositoryPort = postRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
+        this.postVoteRepositoryPort = postVoteRepositoryPort;
         this.postCommentsRepositoryPort = postCommentsRepositoryPort;
         this.userUseCase = userUseCase;
     }
@@ -140,7 +145,29 @@ public class PostUseCase {
     }
 
     public PostResponseDTO getCurrentUserPosts(int offset, int limit, String status) {
-        List<Post> posts = postRepositoryPort.getCurrentUserPosts(getCurrentUser().getId(), status);
+        boolean isActive;
+        ModerationStatus moderationStatus;
+        switch (status) {
+            case "inactive":
+                isActive = false;
+                moderationStatus = null;
+                break;
+            case "pending":
+                isActive = true;
+                moderationStatus = ModerationStatus.NEW;
+                break;
+            case "declined":
+                isActive = true;
+                moderationStatus = ModerationStatus.DECLINED;
+                break;
+            case "published":
+                isActive = true;
+                moderationStatus = ModerationStatus.ACCEPTED;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal argument: status");
+        }
+        List<Post> posts = postRepositoryPort.getCurrentUserPosts(getCurrentUser().getId(), moderationStatus, isActive);
         int count = posts.size();
         posts = getWithOffsetAndLimit(posts, offset, limit);
         List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
@@ -295,5 +322,34 @@ public class PostUseCase {
         //Получить даты с количеством публикаций за определенный год
         Map<String, Integer> posts = postRepositoryPort.getPublicationsCountByYear(year);
         return new CalendarResponseDTO(years,posts);
+    }
+
+    public Map<String, Object> statisticsMy() {
+        int postCount = 0;
+        int likesCount = 0;
+        int dislikesCount = 0;
+        int viewsCount = 0;
+        long firstPublication = 0;   //время в формате UTC
+
+        System.out.println("================================================================================================================");
+        User currentUser = getCurrentUser();
+        //postCount
+        postCount = postRepositoryPort.getCurrentUserPostsCount(currentUser.getId(), ModerationStatus.ACCEPTED, true);
+        //likesCount
+        likesCount = postRepositoryPort.getVotesCountForUser(currentUser.getId(), PostVoteType.LIKE);
+        //dislikesCount
+        dislikesCount = postRepositoryPort.getVotesCountForUser(currentUser.getId(), PostVoteType.DISLIKE);
+        //viewsCount
+        viewsCount = postRepositoryPort.getViewsCountForUser(currentUser.getId());
+        //firstPublication
+        firstPublication = postRepositoryPort.getFirstPublicationTimeForUser(currentUser.getId()).getTime();
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("postsCount", postCount);
+        map.put("likesCount", likesCount);
+        map.put("dislikesCount", dislikesCount);
+        map.put("viewsCount", viewsCount);
+        map.put("firstPublication", firstPublication);
+        return map;
     }
 }

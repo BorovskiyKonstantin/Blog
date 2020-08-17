@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +59,11 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
                                    @Param("isActive")boolean isActive,
                                    @Param("status")ModerationStatus moderationStatus);
 
+    @Query("SELECT count(*) FROM Post p WHERE p.userId = :userId AND p.isActive = :isActive AND (:status IS NULL or p.moderationStatus = :status)")
+    Integer getCurrentUserPostsCount(@Param("userId")int userId,
+                                     @Param("isActive")boolean isActive,
+                                     @Param("status")ModerationStatus status);
+
     @Query(value = "SELECT count(*) FROM posts p WHERE " + activePostsFilter, nativeQuery = true)
     Integer getActivePostsCount();
 
@@ -78,4 +84,13 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "WHERE YEAR(time) = :year " +
             "AND " + activePostsFilter + " GROUP BY date ORDER BY YEAR(date), count DESC", nativeQuery = true)
     List<Object[]> getPublicationsCountByYear(@Param("year") Integer year);
+
+    @Query(value = "SELECT sum(view_count) FROM posts p\n" +
+            "WHERE p.is_active = true AND moderation_status = 'ACCEPTED' AND p.user_id = :id", nativeQuery = true)
+    int getViewsCountForUser(@Param("id") int id);
+
+    @Query(value = "SELECT time FROM posts p\n" +
+            "WHERE p.is_active = true AND moderation_status = 'ACCEPTED' AND p.user_id = :id\n" +
+            "ORDER BY time LIMIT 1", nativeQuery = true)
+    Timestamp getFirstPublicationTimeForUser(@Param("id")int id);
 }

@@ -1,8 +1,10 @@
 package main.dao.postvote;
 
 import main.domain.postvote.entity.PostVote;
+import main.domain.postvote.entity.PostVoteType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -17,4 +19,11 @@ public interface PostVoteRepository extends CrudRepository<PostVote,Integer> {
     Integer getLikeDislikeByPostId(int id);
 
     Optional<PostVote> getByUserIdAndPostId(Integer currentUserId, Integer postId);
+
+    @Query(value = "SELECT count(*) FROM PostVote pv\n" +
+            "JOIN Post p ON pv.id = p.id\n" +
+            "WHERE p.isActive = true AND p.moderationStatus = 'ACCEPTED' AND p.userId = :id\n" +
+            "AND pv.value = :voteType" )
+    int getVoteCountForUser(@Param("id")int id,
+                            @Param("voteType")PostVoteType voteType);
 }

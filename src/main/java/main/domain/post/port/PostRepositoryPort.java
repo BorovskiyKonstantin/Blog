@@ -2,7 +2,9 @@ package main.domain.post.port;
 
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
+import main.domain.postvote.entity.PostVoteType;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +28,9 @@ public interface PostRepositoryPort {
 
     Optional<Post> findPostById(int postId);
 
-    List<Post> getCurrentUserPosts(int currentUserId, String status);
+    List<Post> getCurrentUserPosts(int currentUserId, ModerationStatus moderationStatus, boolean isActive);
+
+    int getCurrentUserPostsCount(int id, ModerationStatus accepted, boolean b);
 
     Post save(Post post);
 
@@ -35,4 +39,10 @@ public interface PostRepositoryPort {
     List<Integer> getYearsOfPublications();
 
     Map<String, Integer> getPublicationsCountByYear(Integer year);
+
+    int getVotesCountForUser(int id, PostVoteType voteType);
+
+    int getViewsCountForUser(int id);
+
+    Timestamp getFirstPublicationTimeForUser(int id);
 }
