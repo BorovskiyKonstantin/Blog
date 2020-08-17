@@ -61,7 +61,7 @@ public class ImageService {
             e.printStackTrace();
         }
 
-        return new ResponseEntity<>(subDirsPath + fileName, HttpStatus.OK);
+        return new ResponseEntity<>(subDirsPath + hashCode + "." + fileFormat, HttpStatus.OK);
     }
 
     private String generateCode(int length) {
