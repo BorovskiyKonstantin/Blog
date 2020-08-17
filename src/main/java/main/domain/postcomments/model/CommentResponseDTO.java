@@ -13,22 +13,22 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentResponseDTO {
     private Integer id;
-    private Timestamp time;
+    private long timestamp;
     private String text;
     private Map<String, Object> user;
     private Boolean result;
     private Map<String, String> errors;
 
-    public CommentResponseDTO(int id, Timestamp time, String text, Map<String, Object> userDTO) {
+    public CommentResponseDTO(int id, Timestamp timestamp, String text, Map<String, Object> userDTO) {
         this.id = id;
-        this.time = time;
+        this.timestamp = timestamp.getTime();
         this.text = text;
         this.user = userDTO;
     }
 
-    public CommentResponseDTO(int id, Timestamp time, String text, int userId, String userName, String userPhoto) {
+    public CommentResponseDTO(int id, Timestamp timestamp, String text, int userId, String userName, String userPhoto) {
         this.id = id;
-        this.time = time;
+        this.timestamp = timestamp.getTime();
         this.text = text;
 
         Map<String, Object> user = new LinkedHashMap<>();

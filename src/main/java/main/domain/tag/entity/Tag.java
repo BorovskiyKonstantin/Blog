@@ -24,6 +24,11 @@ public class Tag {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
-    private List<Post> posts;
+    public Tag() {
+    }
+
+    public Tag(String name){
+        this.name = name;
+    }
+
 }

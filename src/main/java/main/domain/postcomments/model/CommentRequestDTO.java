@@ -9,6 +9,6 @@ public class CommentRequestDTO {
     private Integer parentId;
     @JsonProperty(value = "post_id")
     private Integer postId;
-    @JsonProperty(value = "text")
+    @JsonProperty(value = "text", required = true)
     private String text;
 }

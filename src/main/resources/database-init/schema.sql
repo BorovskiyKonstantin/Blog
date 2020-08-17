@@ -45,6 +45,7 @@ CREATE TABLE `post_votes` (
 CREATE TABLE `tags` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  UNIQUE KEY `name_UNIQUE` (`name`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -92,6 +93,6 @@ CREATE TABLE `global_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO global_settings(code,name,value) VALUES
-('MULTIUSER_MODE','Многопользовательский режим','NO'),
-('POST_PREMODERATION','Премодерация постов','NO'),
-('STATISTICS_IN_PUBLIC','Показывать всем статистику блога','NO');
+('MULTIUSER_MODE','Многопользовательский режим','YES'),
+('POST_PREMODERATION','Премодерация постов','YES'),
+('STATISTICS_IN_PUBLIC','Показывать всем статистику блога','YES');

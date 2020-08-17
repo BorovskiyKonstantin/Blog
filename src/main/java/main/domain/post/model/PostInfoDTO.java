@@ -2,8 +2,10 @@ package main.domain.post.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import main.domain.postcomments.entity.PostComment;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 //Информация о посте
@@ -11,10 +13,12 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostInfoDTO {
     private Integer id;
-    private String time;
+    private long timestamp;
+    private Boolean active;
     private UserInfo user;
     private String title;
     private String announce;
+    private String text;
     private Integer likeCount;
     private Integer dislikeCount;
     private Integer commentCount;
@@ -22,9 +26,10 @@ public class PostInfoDTO {
     private List<Object> comments;
     private List<String> tags;
 
-    public PostInfoDTO(Integer id, String time, int userId, String userName, String title, String announce, Integer likeCount, Integer dislikeCount, Integer commentCount, Integer viewCount) {
+    public PostInfoDTO(Integer id, Timestamp timestamp, int userId, String userName, String title, String announce,
+                       Integer likeCount, Integer dislikeCount, Integer commentCount, Integer viewCount) {
         this.id = id;   //post-id
-        this.time = time;   //post-time
+        this.timestamp = timestamp.getTime();   //post-time
         this.user = new UserInfo(userId, userName);   //user-id,name
         this.title = title;     //post-title
         this.announce = announce;   //post-text

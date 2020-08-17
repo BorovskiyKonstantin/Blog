@@ -6,6 +6,8 @@ import main.domain.captchacode.port.CaptchaCodeRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,7 +24,8 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 
-@Component
+@Service
+@Transactional
 public class CaptchaUseCase {
     private CaptchaCodeRepositoryPort captchaCodeRepositoryPort;
     @Value("${captcha.duration}")
@@ -37,7 +40,7 @@ public class CaptchaUseCase {
         //Удаление старых капч из БД
         deleteOldCaptcha();
 
-        //генерация code
+        //генерация кода картинки капчи - code
         String code = generateCode(5);
         //генерация secret_code
         String secretCode;
@@ -49,17 +52,13 @@ public class CaptchaUseCase {
         CaptchaCode captcha = new CaptchaCode();
         captcha.setCode(code);
         captcha.setSecretCode(secretCode);
-
-        //Дата и время генерации капчи
-        Timestamp captchaDurationTime = new Timestamp(System.currentTimeMillis());
-        captcha.setTime(captchaDurationTime);
+        captcha.setTime(new Timestamp(System.currentTimeMillis()));
         captchaCodeRepositoryPort.save(captcha);
 
-        //Создание картинки капчи
+        //Создание картинки капчи и кодирование в Base64
         BufferedImage captchaImg = createCaptchaImage(code);
-
-        //Кодирование капчи
         String encodedImg = "data:image/png;base64, " + encodeImage(captchaImg);
+
         return new CaptchaCodeResponseDTO(secretCode, encodedImg);
     }
 
