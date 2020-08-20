@@ -348,7 +348,7 @@ public class PostUseCase {
         //viewsCount
         viewsCount = postRepositoryPort.getViewsCount(userId);
         //firstPublication
-        firstPublication = postRepositoryPort.getFirstPublicationTimeForUser(userId).getTime();
+        firstPublication = postRepositoryPort.getFirstPublicationTimeForUser(userId).getTime()/1000;
 
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("postsCount", postCount);
