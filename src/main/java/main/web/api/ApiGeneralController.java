@@ -85,8 +85,7 @@ public class ApiGeneralController {
     //3. Отправка   комментария   к   посту   -   POST   /api/comment/
     @PostMapping("/comment")
     public CommentResponseDTO comment(@Valid @RequestBody CommentRequestDTO commentRequestDTO){
-            CommentResponseDTO postCommentDTO = postCommentUseCase.saveComment(commentRequestDTO);
-            return postCommentDTO;
+        return postCommentUseCase.saveComment(commentRequestDTO, userUseCase.getCurrentUser().getId());
     }
 
     //4. Получение   списка   тэгов   -   GET   /api/tag/

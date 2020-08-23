@@ -11,6 +11,7 @@ import main.domain.postvote.entity.PostVoteType;
 import main.domain.postvote.model.VoteRequestDTO;
 import main.domain.postvote.model.VoteResponseDTO;
 import main.domain.postvote.usecase.PostVoteUseCase;
+import main.domain.user.usecase.UserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +36,13 @@ import org.springframework.web.bind.annotation.*;
 public class ApiPostController {
     private PostUseCase postUseCase;
     private PostVoteUseCase voteUseCase;
+    private UserUseCase userUseCase;
 
     @Autowired
-    public ApiPostController(PostUseCase postUseCase, PostVoteUseCase voteUseCase) {
+    public ApiPostController(PostUseCase postUseCase, PostVoteUseCase voteUseCase, UserUseCase userUseCase) {
         this.postUseCase = postUseCase;
         this.voteUseCase = voteUseCase;
+        this.userUseCase = userUseCase;
     }
 
     //    1. Список   постов
@@ -116,12 +119,12 @@ public class ApiPostController {
 //    10. Лайк   поста   -   POST   /api/post/like
     @PostMapping("/like")
     public VoteResponseDTO likePost (@RequestBody VoteRequestDTO requestDTO){
-        return voteUseCase.votePost(requestDTO, PostVoteType.LIKE);
+        return voteUseCase.votePost(requestDTO, PostVoteType.LIKE, userUseCase.getCurrentUser().getId());
     }
 
 //    11. Дизлайк   поста   -  POST   /api/post/dislike
     @PostMapping("/dislike")
     public VoteResponseDTO dislikePost (@RequestBody VoteRequestDTO requestDTO){
-        return voteUseCase.votePost(requestDTO, PostVoteType.DISLIKE);
+        return voteUseCase.votePost(requestDTO, PostVoteType.DISLIKE, userUseCase.getCurrentUser().getId());
     }
 }

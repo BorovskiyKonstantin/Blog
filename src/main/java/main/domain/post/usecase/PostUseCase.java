@@ -15,6 +15,7 @@ import main.domain.user.port.UserRepositoryPort;
 import main.domain.user.usecase.UserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,17 +31,13 @@ import java.util.stream.Stream;
 public class PostUseCase {
     private PostRepositoryPort postRepositoryPort;
     private UserRepositoryPort userRepositoryPort;
-    private PostVoteRepositoryPort postVoteRepositoryPort;
     private PostCommentsRepositoryPort postCommentsRepositoryPort;
-    private UserUseCase userUseCase;
 
     @Autowired
-    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostVoteRepositoryPort postVoteRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort, UserUseCase userUseCase) {
+    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostVoteRepositoryPort postVoteRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort) {
         this.postRepositoryPort = postRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
-        this.postVoteRepositoryPort = postVoteRepositoryPort;
         this.postCommentsRepositoryPort = postCommentsRepositoryPort;
-        this.userUseCase = userUseCase;
     }
 
     public PostResponseDTO getPosts(int offset, int limit, String mode) {
@@ -311,7 +308,8 @@ public class PostUseCase {
     }
 
     private User getCurrentUser(){
-        return userUseCase.getCurrentUser();
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepositoryPort.findUserByEmail(userEmail).orElseThrow();
     }
 
     public CalendarResponseDTO getCalendar(Integer year) {
