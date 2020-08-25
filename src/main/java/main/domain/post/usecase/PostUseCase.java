@@ -12,7 +12,6 @@ import main.domain.postvote.port.PostVoteRepositoryPort;
 import main.domain.tag.entity.Tag;
 import main.domain.user.entity.User;
 import main.domain.user.port.UserRepositoryPort;
-import main.domain.user.usecase.UserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +23,6 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -66,10 +64,22 @@ public class PostUseCase {
         return new PostResponseDTO(count, postInfoDTOList);
     }
 
-    public PostInfoDTO getPostById(Integer id){
+    public PostInfoDTO getPostById(Integer postId, Optional<User> currentUser){
         //Поиск поста в БД по id
-        Post post = postRepositoryPort.getActivePostById(id)
-                .orElseThrow();
+        Post post = postRepositoryPort.findPostById(postId).orElseThrow();
+
+        //проверить отдавать пост или нет, если это модератор или автор поста или пост опубликован
+        boolean isModerator = currentUser.map(User::isModerator).orElse(false);
+        boolean isAuthor = currentUser.map(u-> u.getId() == post.getUserId()).orElse(false);
+        boolean isPublished =
+                post.getModerationStatus().equals(ModerationStatus.ACCEPTED)
+                        && post.isActive()
+                        && post.getTime().getTime() <= System.currentTimeMillis();
+
+        if (!isModerator && !isAuthor && !isPublished) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        //Добавление просмотров
+        if (!isModerator && !isAuthor) post.setViewCount(post.getViewCount() + 1);
 
         //Получение DTO комментариев к посту
         List<PostComment> comments = postCommentsRepositoryPort.getCommentsByPostId(post.getId());

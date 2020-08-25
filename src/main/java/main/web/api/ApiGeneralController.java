@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 /**
  * для прочих запросов к API
@@ -85,7 +84,7 @@ public class ApiGeneralController {
     //3. Отправка   комментария   к   посту   -   POST   /api/comment/
     @PostMapping("/comment")
     public CommentResponseDTO comment(@Valid @RequestBody CommentRequestDTO commentRequestDTO){
-        return postCommentUseCase.saveComment(commentRequestDTO, userUseCase.getCurrentUser().getId());
+        return postCommentUseCase.saveComment(commentRequestDTO, userUseCase.getCurrentUser().orElseThrow().getId());
     }
 
     //4. Получение   списка   тэгов   -   GET   /api/tag/

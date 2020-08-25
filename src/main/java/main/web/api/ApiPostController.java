@@ -13,8 +13,6 @@ import main.domain.postvote.model.VoteResponseDTO;
 import main.domain.postvote.usecase.PostVoteUseCase;
 import main.domain.user.usecase.UserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,7 +61,7 @@ public class ApiPostController {
 //    3. Получение   поста   -   GET   /api/post/ID
     @GetMapping(value = "/{id}")
     public PostInfoDTO getPostById(@PathVariable Integer id){
-        return postUseCase.getPostById(id);
+        return postUseCase.getPostById(id, userUseCase.getCurrentUser());
     }
 
 //    4. Список   постов   за   конкретную   дату   -   GET   /api/post/byDate
@@ -119,12 +117,12 @@ public class ApiPostController {
 //    10. Лайк   поста   -   POST   /api/post/like
     @PostMapping("/like")
     public VoteResponseDTO likePost (@RequestBody VoteRequestDTO requestDTO){
-        return voteUseCase.votePost(requestDTO, PostVoteType.LIKE, userUseCase.getCurrentUser().getId());
+        return voteUseCase.votePost(requestDTO, PostVoteType.LIKE, userUseCase.getCurrentUser().orElseThrow().getId());
     }
 
 //    11. Дизлайк   поста   -  POST   /api/post/dislike
     @PostMapping("/dislike")
     public VoteResponseDTO dislikePost (@RequestBody VoteRequestDTO requestDTO){
-        return voteUseCase.votePost(requestDTO, PostVoteType.DISLIKE, userUseCase.getCurrentUser().getId());
+        return voteUseCase.votePost(requestDTO, PostVoteType.DISLIKE, userUseCase.getCurrentUser().orElseThrow().getId());
     }
 }

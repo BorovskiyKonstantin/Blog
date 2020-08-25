@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -62,7 +63,7 @@ public class UserUseCase {
         Map<String, String> errors = new LinkedHashMap<>();
         if (userRepositoryPort.findUserByEmail(email).isPresent())
             errors.put("email", "Этот e-mail уже зарегистрирован");
-        if (name == null || name.matches(".*\\d+.*"))
+        if (name == null || name.replaceAll("\\s+", "").length() == 0 || name.matches(".*\\d+.*"))
             errors.put("name", "Имя указано неверно");
         if (password.length() < 6)
             errors.put("password", "Пароль короче 6-ти символов");
@@ -126,7 +127,7 @@ public class UserUseCase {
 
             //Смена пароля
         else {
-            user.setPassword(passwordEncoder.encode(password));
+            Objects.requireNonNull(user).setPassword(passwordEncoder.encode(password));
             userRepositoryPort.save(user);
             return new ChangePassResponseDTO(true, null);
         }
@@ -171,14 +172,13 @@ public class UserUseCase {
         return new RestoreResponseDTO(true);
     }
 
-    public User getCurrentUser() {
+    public Optional<User> getCurrentUser() {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        User currentUser = userRepositoryPort.findUserByEmail(userEmail).orElseThrow();
-        return currentUser;
+        return userRepositoryPort.findUserByEmail(userEmail);
     }
 
     public ResponseEntity<Object> editProfile(String email, String name, String password, MultipartFile photo, Integer removePhoto) {
-        User currentUserProfile = getCurrentUser();
+        User currentUserProfile = getCurrentUser().orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         Map<String, String> errors = new LinkedHashMap<>(); //Лог ошибок
 
         //обработка параметра email
@@ -192,7 +192,7 @@ public class UserUseCase {
 
         //обработка параметра name
         if (name != null) {
-            if (name.replaceAll("\\s+", "").length() == 0 || name.matches("\\d+"))
+            if (name.replaceAll("\\s+", "").length() == 0 || name.matches(".*\\d+.*"))
                 errors.put("name", "Имя указано неверно");
             else
                 currentUserProfile.setName(name);
