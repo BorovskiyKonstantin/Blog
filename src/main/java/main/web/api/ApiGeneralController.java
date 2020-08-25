@@ -12,6 +12,7 @@ import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.usecase.PostCommentUseCase;
 import main.domain.tag.model.TagResponseDTO;
 import main.domain.tag.usecase.TagUseCase;
+import main.domain.user.entity.User;
 import main.domain.user.model.profile.ChangeProfileRequestDTO;
 import main.domain.user.service.ImageService;
 import main.domain.user.usecase.UserUseCase;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 
@@ -133,6 +135,9 @@ public class ApiGeneralController {
     //    9. Статистика   по   всему   блогу   -   GET   /api/statistics/all
     @GetMapping("/statistics/all")
     public ResponseEntity<Object> statisticsAll(){
+        if(!globalSettingUseCase.isStatisticsInPublicEnabled())
+            if(!userUseCase.getCurrentUser().map(User::isModerator).orElse(false))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         return new ResponseEntity<>(postUseCase.statisticsAll(), HttpStatus.OK);
     }
 

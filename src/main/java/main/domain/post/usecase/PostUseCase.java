@@ -1,5 +1,6 @@
 package main.domain.post.usecase;
 
+import main.domain.globalsetting.usecase.GlobalSettingUseCase;
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.post.model.*;
@@ -8,7 +9,6 @@ import main.domain.postcomments.entity.PostComment;
 import main.domain.postcomments.model.CommentResponseDTO;
 import main.domain.postcomments.port.PostCommentsRepositoryPort;
 import main.domain.postvote.entity.PostVoteType;
-import main.domain.postvote.port.PostVoteRepositoryPort;
 import main.domain.tag.entity.Tag;
 import main.domain.user.entity.User;
 import main.domain.user.port.UserRepositoryPort;
@@ -30,12 +30,14 @@ public class PostUseCase {
     private PostRepositoryPort postRepositoryPort;
     private UserRepositoryPort userRepositoryPort;
     private PostCommentsRepositoryPort postCommentsRepositoryPort;
+    private GlobalSettingUseCase globalSettingUseCase;
 
     @Autowired
-    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostVoteRepositoryPort postVoteRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort) {
+    public PostUseCase(PostRepositoryPort postRepositoryPort, UserRepositoryPort userRepositoryPort, PostCommentsRepositoryPort postCommentsRepositoryPort, GlobalSettingUseCase globalSettingUseCase) {
         this.postRepositoryPort = postRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
         this.postCommentsRepositoryPort = postCommentsRepositoryPort;
+        this.globalSettingUseCase = globalSettingUseCase;
     }
 
     public PostResponseDTO getPosts(int offset, int limit, String mode) {
@@ -64,13 +66,13 @@ public class PostUseCase {
         return new PostResponseDTO(count, postInfoDTOList);
     }
 
-    public PostInfoDTO getPostById(Integer postId, Optional<User> currentUser){
+    public PostInfoDTO getPostById(Integer postId, Optional<User> currentUser) {
         //Поиск поста в БД по id
         Post post = postRepositoryPort.findPostById(postId).orElseThrow();
 
         //проверить отдавать пост или нет, если это модератор или автор поста или пост опубликован
         boolean isModerator = currentUser.map(User::isModerator).orElse(false);
-        boolean isAuthor = currentUser.map(u-> u.getId() == post.getUserId()).orElse(false);
+        boolean isAuthor = currentUser.map(u -> u.getId() == post.getUserId()).orElse(false);
         boolean isPublished =
                 post.getModerationStatus().equals(ModerationStatus.ACCEPTED)
                         && post.isActive()
@@ -132,7 +134,7 @@ public class PostUseCase {
 
     public PostResponseDTO getPostsModeration(int offset, int limit, String status) {
         List<Post> posts;
-        switch (status){
+        switch (status) {
             case "new":
                 posts = postRepositoryPort.getActivePostsByModerationStatus(ModerationStatus.NEW, null);
                 break;
@@ -181,13 +183,13 @@ public class PostUseCase {
         return new PostResponseDTO(count, postInfoDTOList);
     }
 
-    public PostSaveResponseDTO addPost(PostSaveRequestDTO requestDTO){
+    public PostSaveResponseDTO addPost(PostSaveRequestDTO requestDTO) {
         //Поиск ошибок
-        Map<String,String> errors = new LinkedHashMap<>();
-        if (requestDTO.getTitle().trim().length() < 3){
+        Map<String, String> errors = new LinkedHashMap<>();
+        if (requestDTO.getTitle().trim().length() < 3) {
             errors.put("title", "Заголовок не установлен");
         }
-        if (requestDTO.getText().trim().replaceAll("<[^<>]+>", "").length() < 50){
+        if (requestDTO.getText().trim().replaceAll("<[^<>]+>", "").length() < 50) {
             errors.put("text", "Текст публикации слишком короткий");
         }
         if (errors.size() > 0)
@@ -201,7 +203,7 @@ public class PostUseCase {
         Post post = new Post();
         post.setUserId(getCurrentUser().getId());
         post.setActive(requestDTO.isActive());
-        post.setModerationStatus(ModerationStatus.NEW);
+        post.setModerationStatus(globalSettingUseCase.isPostPremoderationEnabled() ? ModerationStatus.NEW : ModerationStatus.ACCEPTED);
         Timestamp time = requestDTO.getTime().getTime() > System.currentTimeMillis() ?
                 requestDTO.getTime() : new Timestamp(System.currentTimeMillis());
         post.setTime(time);
@@ -215,17 +217,17 @@ public class PostUseCase {
 
     public PostSaveResponseDTO editPost(Integer id, PostSaveRequestDTO requestDTO) {
         Post post = postRepositoryPort.findPostById(id).orElseThrow(
-                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if(getCurrentUser().getId() != post.getUserId()){
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (getCurrentUser().getId() != post.getUserId()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
         //Поиск ошибок
-        Map<String,String> errors = new LinkedHashMap<>();
-        if (requestDTO.getTitle().trim().length() < 3){
+        Map<String, String> errors = new LinkedHashMap<>();
+        if (requestDTO.getTitle().trim().length() < 3) {
             errors.put("title", "Заголовок не установлен");
         }
-        if (requestDTO.getText().trim().replaceAll("<[^<>]+>", "").length() < 50){
+        if (requestDTO.getText().trim().replaceAll("<[^<>]+>", "").length() < 50) {
             errors.put("text", "Текст публикации слишком короткий");
         }
         if (errors.size() > 0)
@@ -238,7 +240,7 @@ public class PostUseCase {
 
         //Редактирование и сохранение поста
         post.setActive(requestDTO.isActive());
-        post.setModerationStatus(ModerationStatus.NEW);
+        post.setModerationStatus(globalSettingUseCase.isPostPremoderationEnabled() ? ModerationStatus.NEW : ModerationStatus.ACCEPTED);
         Timestamp time = requestDTO.getTime().getTime() > System.currentTimeMillis() ?
                 requestDTO.getTime() : new Timestamp(System.currentTimeMillis());
         post.setTime(time);
@@ -250,7 +252,7 @@ public class PostUseCase {
     }
 
     //Получение списка с отступом и лимитом
-    private List<Post> getWithOffsetAndLimit(List<Post> posts, int offset, int limit){
+    private List<Post> getWithOffsetAndLimit(List<Post> posts, int offset, int limit) {
         return posts.stream().skip(offset).limit(limit).collect(Collectors.toList());
     }
 
@@ -262,7 +264,7 @@ public class PostUseCase {
     }
 
     //Создание DTO из поста
-    private PostInfoDTO postToDTO(Post post){
+    private PostInfoDTO postToDTO(Post post) {
         Integer postId = post.getId();
         Timestamp time = post.getTime();
         User user = userRepositoryPort.findById(post.getUserId()).orElseThrow();
@@ -292,14 +294,14 @@ public class PostUseCase {
     public Object moderation(PostModerationDTO requestDTO) {
         //Проверка: является ли пользователь модератором?
         User currentUser = getCurrentUser();
-        if(!currentUser.isModerator())
+        if (!currentUser.isModerator())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
         int postId = requestDTO.getPostId();
         String decision = requestDTO.getDecision();
 
         ModerationStatus status;
-        switch (decision){
+        switch (decision) {
             case "accept":
                 status = ModerationStatus.ACCEPTED;
                 break;
@@ -311,13 +313,13 @@ public class PostUseCase {
         }
 
         int updateResult = postRepositoryPort.setPostModeration(postId, status, currentUser.getId());
-        if(updateResult == 0)
+        if (updateResult == 0)
             return Collections.singletonMap("result", false);
         else
             return Collections.singletonMap("result", true);
     }
 
-    private User getCurrentUser(){
+    private User getCurrentUser() {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepositoryPort.findUserByEmail(userEmail).orElseThrow();
     }
@@ -329,7 +331,7 @@ public class PostUseCase {
         List<Integer> years = postRepositoryPort.getYearsOfPublications();
         //Получить даты с количеством публикаций за определенный год
         Map<String, Integer> posts = postRepositoryPort.getPublicationsCountByYear(year);
-        return new CalendarResponseDTO(years,posts);
+        return new CalendarResponseDTO(years, posts);
     }
 
     public Map<String, Object> statisticsMy() {
@@ -340,7 +342,7 @@ public class PostUseCase {
         return getStatistics(null);
     }
 
-    private Map<String, Object> getStatistics(Integer userId){
+    private Map<String, Object> getStatistics(Integer userId) {
         int postCount = 0;
         int likesCount = 0;
         int dislikesCount = 0;
@@ -356,7 +358,7 @@ public class PostUseCase {
         //viewsCount
         viewsCount = postRepositoryPort.getViewsCount(userId);
         //firstPublication
-        firstPublication = postRepositoryPort.getFirstPublicationTimeForUser(userId).getTime()/1000;
+        firstPublication = postRepositoryPort.getFirstPublicationTimeForUser(userId).getTime() / 1000;
 
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("postsCount", postCount);

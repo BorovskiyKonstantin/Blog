@@ -2,7 +2,7 @@ package main.web.api;
 
 import main.domain.captchacode.model.CaptchaCodeResponseDTO;
 import main.domain.captchacode.usecase.CaptchaUseCase;
-import main.domain.user.entity.User;
+import main.domain.globalsetting.usecase.GlobalSettingUseCase;
 import main.domain.user.model.auth.AuthResponseDTO;
 import main.domain.user.model.changepass.ChangePassRequestDTO;
 import main.domain.user.model.changepass.ChangePassResponseDTO;
@@ -11,11 +11,11 @@ import main.domain.user.model.register.RegisterResponseDTO;
 import main.domain.user.model.restore.RestoreRequestDTO;
 import main.domain.user.model.restore.RestoreResponseDTO;
 import main.domain.user.usecase.UserUseCase;
-import main.web.security.user.model.WebUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * 1. + Вход   -   POST   /api/auth/login (осуществляется SpringSecurity)
@@ -32,11 +32,13 @@ import org.springframework.web.bind.annotation.*;
 public class ApiAuthController {
     private UserUseCase userUseCase;
     private CaptchaUseCase captchaUseCase;
+    private GlobalSettingUseCase globalSettingUseCase;
 
     @Autowired
-    public ApiAuthController(UserUseCase userUseCase, CaptchaUseCase captchaUseCase) {
+    public ApiAuthController(UserUseCase userUseCase, CaptchaUseCase captchaUseCase, GlobalSettingUseCase globalSettingUseCase) {
         this.userUseCase = userUseCase;
         this.captchaUseCase = captchaUseCase;
+        this.globalSettingUseCase = globalSettingUseCase;
     }
 
     // 2. Статус   авторизации   -   GET   /api/auth/check
@@ -64,6 +66,9 @@ public class ApiAuthController {
     // 5. Регистрация   -   POST   /api/auth/register
     @PostMapping(value = "/register")
     public RegisterResponseDTO register(@RequestBody RegisterRequestDTO requestDTO) {
+        //Проверка режима глобальных настроек
+        if(!globalSettingUseCase.isMultiuserModeEnabled()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
         return userUseCase.registerUser(
                 requestDTO.getEmail(),
                 requestDTO.getName(),

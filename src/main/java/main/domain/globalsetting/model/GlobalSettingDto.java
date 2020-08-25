@@ -9,7 +9,7 @@ public class GlobalSettingDto {
     private Boolean multiuserMode;
     @JsonProperty("POST_PREMODERATION")
     private Boolean postPremoderation;
-    @JsonProperty("STATISTICS_IN_PUBLIC")
+    @JsonProperty("STATISTICS_IS_PUBLIC")
     private Boolean statisticsInPublic;
 
     public GlobalSettingDto(boolean multiuserMode, boolean postPremoderation, boolean statisticsInPublic) {
@@ -28,7 +28,7 @@ public class GlobalSettingDto {
         return postPremoderation;
     }
 
-    @JsonGetter("STATISTICS_IN_PUBLIC")
+    @JsonGetter("STATISTICS_IS_PUBLIC")
     public boolean isStatisticsInPublicEnabled() {
         return statisticsInPublic;
     }
