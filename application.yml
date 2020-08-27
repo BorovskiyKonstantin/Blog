@@ -20,3 +20,13 @@ upload.image-max-size: 5 #(MB)
 spring.servlet.multipart.max-request-size: 20MB    # максимальный общий размер любого запроса (default 10MB)
 spring.servlet.multipart.max-file-size: 10MB    # максимальный размер любого файла в запросе (default 1MB)
 
+# настройки email сервиса
+spring.mail.host: smtp.gmail.com
+spring.mail.port: 587
+spring.mail.username: bkblogtestmail@gmail.com
+spring.mail.password: '@Bc12345'
+spring.mail.properties.mail.transport.protocol: smtp
+spring.mail.properties.mail.smtp.auth: true
+spring.mail.properties.mail.smtp.starttls.enable: true
+spring.mail.properties.debug: true
+spring.mail.properties.mail.smtp.ssl.trust: smtp.gmail.com

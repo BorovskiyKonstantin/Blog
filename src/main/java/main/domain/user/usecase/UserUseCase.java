@@ -11,6 +11,7 @@ import main.domain.user.model.changepass.ChangePassResponseDTO;
 import main.domain.user.model.register.RegisterResponseDTO;
 import main.domain.user.model.restore.RestoreResponseDTO;
 import main.domain.user.port.UserRepositoryPort;
+import main.domain.user.service.EmailService;
 import main.domain.user.service.ImageService;
 import main.web.security.user.model.WebUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +37,16 @@ public class UserUseCase {
     private PasswordEncoder passwordEncoder;
     private CaptchaCodeRepositoryPort captchaCodeRepositoryPort;
     private ImageService imageService;
+    private EmailService emailService;
 
     @Autowired
-    public UserUseCase(UserRepositoryPort userRepositoryPort, PostRepositoryPort postRepositoryPort, PasswordEncoder passwordEncoder, CaptchaCodeRepositoryPort captchaCodeRepositoryPort, ImageService imageService) {
+    public UserUseCase(UserRepositoryPort userRepositoryPort, PostRepositoryPort postRepositoryPort, PasswordEncoder passwordEncoder, CaptchaCodeRepositoryPort captchaCodeRepositoryPort, ImageService imageService, EmailService emailService) {
         this.userRepositoryPort = userRepositoryPort;
         this.postRepositoryPort = postRepositoryPort;
         this.passwordEncoder = passwordEncoder;
         this.captchaCodeRepositoryPort = captchaCodeRepositoryPort;
         this.imageService = imageService;
+        this.emailService = emailService;
     }
 
     public Optional<User> getUserByUsername(String username) {
@@ -160,13 +163,10 @@ public class UserUseCase {
                 "\nЕсли Вы не отправляли запрос, то просто проигнорируйте это письмо." +
                 "\n" +
                 "\nВ противном случае перейдите по ссылке: " +
-                "\n/login/change-password/" + hash;
+                "\nhttp://localhost:8080/login/change-password/" + hash;
 
         //Отправка письма
-        //TODO: сделать сервис отправки сообщений
-        System.out.println("\n\n\n==========ПИСЬМО==============");
-        System.out.println(mailText);
-        System.out.println("==============================");
+        emailService.sendSimpleMail(user.getEmail(), "Восстановление пароля", mailText);
 
         //Response
         return new RestoreResponseDTO(true);
