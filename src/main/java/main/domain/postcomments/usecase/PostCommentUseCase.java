@@ -20,17 +20,15 @@ import java.util.Map;
 @Transactional
 public class PostCommentUseCase {
     private PostCommentsRepositoryPort postCommentsRepositoryPort;
-    private UserUseCase userUseCase;
     private PostRepositoryPort postRepositoryPort;
 
     @Autowired
-    public PostCommentUseCase(PostCommentsRepositoryPort postCommentsRepositoryPort, UserUseCase userUseCase, PostRepositoryPort postRepositoryPort) {
+    public PostCommentUseCase(PostCommentsRepositoryPort postCommentsRepositoryPort, PostRepositoryPort postRepositoryPort) {
         this.postCommentsRepositoryPort = postCommentsRepositoryPort;
-        this.userUseCase = userUseCase;
         this.postRepositoryPort = postRepositoryPort;
     }
 
-    public CommentResponseDTO saveComment(CommentRequestDTO commentRequestDTO) {
+    public CommentResponseDTO saveComment(CommentRequestDTO commentRequestDTO, int currentUserId) {
         Integer parentId = commentRequestDTO.getParentId();
         Integer postId = commentRequestDTO.getPostId();
         String text = commentRequestDTO.getText();
@@ -50,10 +48,9 @@ public class PostCommentUseCase {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
         }
 
-        int userId = userUseCase.getCurrentUser().getId();
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
-        PostComment postComment = new PostComment(parentId, postId, userId, currentTime, text);
+        PostComment postComment = new PostComment(parentId, postId, currentUserId, currentTime, text);
         postCommentsRepositoryPort.save(postComment);
 
         CommentResponseDTO responseDTO = new CommentResponseDTO();

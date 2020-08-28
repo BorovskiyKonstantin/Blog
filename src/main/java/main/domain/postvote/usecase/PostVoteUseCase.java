@@ -18,16 +18,13 @@ import java.util.Optional;
 @Transactional
 public class PostVoteUseCase {
     private PostVoteRepositoryPort voteRepositoryPort;
-    private UserUseCase userUseCase;
 
     @Autowired
-    public PostVoteUseCase(PostVoteRepositoryPort voteRepositoryPort, UserUseCase userUseCase) {
+    public PostVoteUseCase(PostVoteRepositoryPort voteRepositoryPort) {
         this.voteRepositoryPort = voteRepositoryPort;
-        this.userUseCase = userUseCase;
     }
 
-    public VoteResponseDTO votePost(VoteRequestDTO requestDTO, PostVoteType voteType) {
-        Integer currentUserId = userUseCase.getCurrentUser().getId();
+    public VoteResponseDTO votePost(VoteRequestDTO requestDTO, PostVoteType voteType, int currentUserId) {
         Integer postId = requestDTO.getPostId();
 
         PostVote postVote = voteRepositoryPort.getPostVote(currentUserId, postId).orElse(new PostVote());

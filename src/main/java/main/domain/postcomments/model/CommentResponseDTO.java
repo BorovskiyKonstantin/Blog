@@ -21,14 +21,14 @@ public class CommentResponseDTO {
 
     public CommentResponseDTO(int id, Timestamp timestamp, String text, Map<String, Object> userDTO) {
         this.id = id;
-        this.timestamp = timestamp.getTime();
+        this.timestamp = timestamp.getTime()/1000;
         this.text = text;
         this.user = userDTO;
     }
 
     public CommentResponseDTO(int id, Timestamp timestamp, String text, int userId, String userName, String userPhoto) {
         this.id = id;
-        this.timestamp = timestamp.getTime();
+        this.timestamp = timestamp.getTime()/1000;
         this.text = text;
 
         Map<String, Object> user = new LinkedHashMap<>();
