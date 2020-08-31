@@ -8,14 +8,27 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+
 @Service
 @Transactional
 public class GlobalSettingUseCase {
     private GlobalSettingRepositoryPort globalSettingRepositoryPort;
 
+    private static Boolean MULTIUSER_MODE;
+    private static Boolean POST_PREMODERATION;
+    private static Boolean STATISTICS_IS_PUBLIC;
+
     @Autowired
     public GlobalSettingUseCase(GlobalSettingRepositoryPort globalSettingRepositoryPort) {
         this.globalSettingRepositoryPort = globalSettingRepositoryPort;
+    }
+
+    @PostConstruct
+    private void setSettings(){
+        MULTIUSER_MODE = globalSettingRepositoryPort.findByCode("MULTIUSER_MODE").orElseThrow().getValue().equals("YES");
+        POST_PREMODERATION = globalSettingRepositoryPort.findByCode("POST_PREMODERATION").orElseThrow().getValue().equals("YES");
+        STATISTICS_IS_PUBLIC = globalSettingRepositoryPort.findByCode("STATISTICS_IS_PUBLIC").orElseThrow().getValue().equals("YES");
     }
 
     public void editSettings(GlobalSettingDto settingDto) {
@@ -23,36 +36,30 @@ public class GlobalSettingUseCase {
         GlobalSetting postPremoderation = globalSettingRepositoryPort.findByCode("POST_PREMODERATION").orElseThrow();
         GlobalSetting statisticsInPublic = globalSettingRepositoryPort.findByCode("STATISTICS_IS_PUBLIC").orElseThrow();
 
+        // Изменение настроек в БД
         multiuserMode.setValue(settingDto.isMultiuserModeEnabled() ? "YES" : "NO");
         postPremoderation.setValue(settingDto.isPostPremoderationEnabled() ? "YES" : "NO");
         statisticsInPublic.setValue(settingDto.isStatisticsInPublicEnabled() ? "YES" : "NO");
 
-        globalSettingRepositoryPort.save(multiuserMode);
-        globalSettingRepositoryPort.save(postPremoderation);
-        globalSettingRepositoryPort.save(statisticsInPublic);
+        // Изменение настроек в статических переменных
+        MULTIUSER_MODE = settingDto.isMultiuserModeEnabled();
+        POST_PREMODERATION = settingDto.isPostPremoderationEnabled();
+        STATISTICS_IS_PUBLIC = settingDto.isStatisticsInPublicEnabled();
     }
 
     public GlobalSettingDto getSettings() {
-        String multiuserModeValue = globalSettingRepositoryPort.findByCode("MULTIUSER_MODE").orElseThrow().getValue();
-        String postPremoderationValue = globalSettingRepositoryPort.findByCode("POST_PREMODERATION").orElseThrow().getValue();
-        String statisticsInPublicValue = globalSettingRepositoryPort.findByCode("STATISTICS_IS_PUBLIC").orElseThrow().getValue();
-
-        return new GlobalSettingDto(
-                multiuserModeValue.equals("YES"),
-                postPremoderationValue.equals("YES"),
-                statisticsInPublicValue.equals("YES")
-        );
+        return new GlobalSettingDto(MULTIUSER_MODE, POST_PREMODERATION, STATISTICS_IS_PUBLIC);
     }
 
     public boolean isMultiuserModeEnabled(){
-        return globalSettingRepositoryPort.findByCode("MULTIUSER_MODE").orElseThrow().getValue().equals("YES");
+        return MULTIUSER_MODE;
     }
 
     public boolean isPostPremoderationEnabled(){
-        return globalSettingRepositoryPort.findByCode("POST_PREMODERATION").orElseThrow().getValue().equals("YES");
+        return POST_PREMODERATION;
     }
 
     public boolean isStatisticsInPublicEnabled(){
-        return globalSettingRepositoryPort.findByCode("STATISTICS_IS_PUBLIC").orElseThrow().getValue().equals("YES");
+        return STATISTICS_IS_PUBLIC;
     }
 }
