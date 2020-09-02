@@ -8,6 +8,9 @@ import main.domain.postvote.entity.PostVoteType;
 import main.domain.tag.entity.Tag;
 import main.domain.tag.port.TagRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -38,32 +41,38 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public List<Post> getAllPosts(String mode) {
+    public Page<Post> getAllPosts(int offset, int limit, String mode) {
+        int page = offset/10;
+        Pageable pageable = PageRequest.of(page, limit);
+
         switch (mode) {
             case "recent":
-                return postRepository.getPostsRecentMode();
+                return postRepository.getPostsRecentMode(pageable);
 
             case "popular":
-                return postRepository.getPostsPopularMode();
+                return postRepository.getPostsPopularMode(pageable);
 
             case "best":
-                return postRepository.getPostsBestMode();
+                return postRepository.getPostsBestMode(pageable);
 
             case "early":
-                return postRepository.getPostsEarlyMode();
-
+                return postRepository.getPostsEarlyMode(pageable);
         }
         throw new IllegalArgumentException("Illegal argument: mode");
     }
 
     @Override
-    public List<Post> getActivePostsByModerationStatus(ModerationStatus moderationStatus, Integer moderatorId) {
-        return postRepository.getActivePostsByModerationStatus(moderationStatus, moderatorId);
+    public Page<Post> getActivePostsByModerationStatus(int offset, int limit, ModerationStatus moderationStatus, Integer moderatorId) {
+        int page = offset/10;
+        Pageable pageable = PageRequest.of(page, limit);
+        return postRepository.getActivePostsByModerationStatus(moderationStatus, moderatorId, pageable);
     }
 
     @Override
-    public List<Post> searchPosts(String query) {
-        return postRepository.searchPosts(query);
+    public Page<Post> searchPosts(int offset, int limit, String query) {
+        int page = offset/10;
+        Pageable pageable = PageRequest.of(page, limit);
+        return postRepository.searchPosts(query, pageable);
     }
 
     @Override
@@ -72,13 +81,17 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public List<Post> getPostsByDate(String date) {
-        return postRepository.getPostsByDate(date);
+    public Page<Post> getPostsByDate(int offset, int limit, String date) {
+        int page = offset/10;
+        Pageable pageable = PageRequest.of(page, limit);
+        return postRepository.getPostsByDate(date, pageable);
     }
 
     @Override
-    public List<Post> getPostsByTag(String tag) {
-        return postRepository.getPostsByTag(tag);
+    public Page<Post> getPostsByTag(int offset, int limit, String tag) {
+        int page = offset/10;
+        Pageable pageable = PageRequest.of(page, limit);
+        return postRepository.getPostsByTag(tag, pageable);
     }
 
     @Override
@@ -87,8 +100,10 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     }
 
     @Override
-    public List<Post> getCurrentUserPosts(int currentUserId, ModerationStatus status, boolean isActive) {
-        return postRepository.getCurrentUserPosts(currentUserId, isActive, status);
+    public Page<Post> getCurrentUserPosts(int offset, int limit, int currentUserId, ModerationStatus moderationStatus, boolean isActive) {
+        int page = offset/10;
+        Pageable pageable = PageRequest.of(page, limit);
+        return postRepository.getCurrentUserPosts(currentUserId, isActive, moderationStatus, pageable);
     }
 
     @Override
@@ -138,5 +153,20 @@ public class PostRepositoryPortImpl implements PostRepositoryPort {
     @Override
     public Timestamp getFirstPublicationTimeForUser(Integer userId) {
         return postRepository.getFirstPublicationTimeForUser(userId);
+    }
+
+    @Override
+    public int getLikesCountByPostId(int id) {
+        return postVoteRepository.getLikeCountByPostId(id);
+    }
+
+    @Override
+    public int getDislikesCountByPostId(int id) {
+        return postVoteRepository.getDislikeByPostId(id);
+    }
+
+    @Override
+    public int getNewActivePostsCount() {
+        return postRepository.getNewActivePostsCount();
     }
 }

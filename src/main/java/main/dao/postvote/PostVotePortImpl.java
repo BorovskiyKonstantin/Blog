@@ -23,7 +23,7 @@ public class PostVotePortImpl implements PostVoteRepositoryPort {
 
     @Override
     public Integer getDislikeCountByPostId(int id) {
-        return postVoteRepository.getLikeDislikeByPostId(id);
+        return postVoteRepository.getDislikeByPostId(id);
     }
 
     @Override

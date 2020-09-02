@@ -13,6 +13,7 @@ import main.domain.tag.entity.Tag;
 import main.domain.user.entity.User;
 import main.domain.user.port.UserRepositoryPort;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -41,28 +42,23 @@ public class PostUseCase {
     }
 
     public PostResponseDTO getPosts(int offset, int limit, String mode) {
-        //TODO сделать пагинацию либо заменить на 2 запроса в БД
-        List<Post> posts = postRepositoryPort.getAllPosts(mode);
-        int count = posts.size();
-        posts = getWithOffsetAndLimit(posts, offset, limit);
-        //todo==============================================
-        List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
+        Page<Post> page = postRepositoryPort.getAllPosts(offset, limit, mode);
+        long count = page.getTotalElements();
+        List<PostInfoDTO> postInfoDTOList = postsListToDTO(page.getContent());
         return new PostResponseDTO(count, postInfoDTOList);
     }
 
     public PostResponseDTO searchPosts(int offset, int limit, String query) {
-        List<Post> posts = postRepositoryPort.searchPosts(query);
-        int count = posts.size();
-        posts = getWithOffsetAndLimit(posts, offset, limit);
-        List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
+        Page<Post> page = postRepositoryPort.searchPosts(offset, limit, query);
+        long count = page.getTotalElements();
+        List<PostInfoDTO> postInfoDTOList = postsListToDTO(page.getContent());
         return new PostResponseDTO(count, postInfoDTOList);
     }
 
     public PostResponseDTO getPostsByDate(int offset, int limit, String date) {
-        List<Post> posts = postRepositoryPort.getPostsByDate(date);
-        int count = posts.size();
-        posts = getWithOffsetAndLimit(posts, offset, limit);
-        List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
+        Page<Post> page = postRepositoryPort.getPostsByDate(offset, limit, date);
+        long count = page.getTotalElements();
+        List<PostInfoDTO> postInfoDTOList = postsListToDTO(page.getContent());
         return new PostResponseDTO(count, postInfoDTOList);
     }
 
@@ -125,31 +121,29 @@ public class PostUseCase {
     }
 
     public PostResponseDTO getPostsByTag(int offset, int limit, String tag) {
-        List<Post> posts = postRepositoryPort.getPostsByTag(tag);
-        int count = posts.size();
-        posts = getWithOffsetAndLimit(posts, offset, limit);
-        List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
+        Page<Post> page = postRepositoryPort.getPostsByTag(offset, limit, tag);
+        long count = page.getTotalElements();
+        List<PostInfoDTO> postInfoDTOList = postsListToDTO(page.getContent());
         return new PostResponseDTO(count, postInfoDTOList);
     }
 
     public PostResponseDTO getPostsModeration(int offset, int limit, String status) {
-        List<Post> posts;
+        Page<Post> page;
         switch (status) {
             case "new":
-                posts = postRepositoryPort.getActivePostsByModerationStatus(ModerationStatus.NEW, null);
+                page = postRepositoryPort.getActivePostsByModerationStatus(offset, limit, ModerationStatus.NEW, null);
                 break;
             case "declined":
-                posts = postRepositoryPort.getActivePostsByModerationStatus(ModerationStatus.DECLINED, getCurrentUser().getId());
+                page = postRepositoryPort.getActivePostsByModerationStatus(offset, limit, ModerationStatus.DECLINED, getCurrentUser().getId());
                 break;
             case "accepted":
-                posts = postRepositoryPort.getActivePostsByModerationStatus(ModerationStatus.ACCEPTED, getCurrentUser().getId());
+                page = postRepositoryPort.getActivePostsByModerationStatus(offset, limit, ModerationStatus.ACCEPTED, getCurrentUser().getId());
                 break;
             default:
                 throw new IllegalArgumentException();
         }
-        int count = posts.size();
-        posts = getWithOffsetAndLimit(posts, offset, limit);
-        List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
+        long count = page.getTotalElements();
+        List<PostInfoDTO> postInfoDTOList = postsListToDTO(page.getContent());
         return new PostResponseDTO(count, postInfoDTOList);
     }
 
@@ -176,10 +170,9 @@ public class PostUseCase {
             default:
                 throw new IllegalArgumentException("Illegal argument: status");
         }
-        List<Post> posts = postRepositoryPort.getCurrentUserPosts(getCurrentUser().getId(), moderationStatus, isActive);
-        int count = posts.size();
-        posts = getWithOffsetAndLimit(posts, offset, limit);
-        List<PostInfoDTO> postInfoDTOList = postsListToDTO(posts);
+        Page<Post> page = postRepositoryPort.getCurrentUserPosts(offset, limit, getCurrentUser().getId(), moderationStatus, isActive);
+        long count = page.getTotalElements();
+        List<PostInfoDTO> postInfoDTOList = postsListToDTO(page.getContent());
         return new PostResponseDTO(count, postInfoDTOList);
     }
 
@@ -251,10 +244,6 @@ public class PostUseCase {
         return new PostSaveResponseDTO(true);
     }
 
-    //Получение списка с отступом и лимитом
-    private List<Post> getWithOffsetAndLimit(List<Post> posts, int offset, int limit) {
-        return posts.stream().skip(offset).limit(limit).collect(Collectors.toList());
-    }
 
     //Создание списка с DTO постов
     private List<PostInfoDTO> postsListToDTO(List<Post> posts) {
@@ -272,8 +261,8 @@ public class PostUseCase {
         String userName = user.getName();
         String title = post.getTitle();
         String announce = post.getText();
-        Integer likeCount = post.getLikes().size();
-        Integer dislikeCount = post.getDislikes().size();
+        Integer likeCount = postRepositoryPort.getLikesCountByPostId(post.getId());
+        Integer dislikeCount = postRepositoryPort.getDislikesCountByPostId(post.getId());
         Integer commentCount = post.getComments().size();
         Integer viewCount = post.getViewCount();
 
