@@ -15,8 +15,8 @@ public interface PostVoteRepository extends CrudRepository<PostVote,Integer> {
     @Query(value = "SELECT COUNT(value) FROM post_votes WHERE post_id = ?1 AND value = 1", nativeQuery = true)
     Integer getLikeCountByPostId(int id);
 
-    @Query(value = "SELECT COUNT(value) FROM post_votes WHERE post_id = ?1 AND value = 0", nativeQuery = true)
-    Integer getLikeDislikeByPostId(int id);
+    @Query(value = "SELECT COUNT(value) FROM post_votes WHERE post_id = ?1 AND value = -1", nativeQuery = true)
+    Integer getDislikeByPostId(int id);
 
     Optional<PostVote> getByUserIdAndPostId(Integer currentUserId, Integer postId);
 
@@ -24,6 +24,6 @@ public interface PostVoteRepository extends CrudRepository<PostVote,Integer> {
             "JOIN Post p ON pv.id = p.id\n" +
             "WHERE p.isActive = true AND p.moderationStatus = 'ACCEPTED' AND (:id IS NULL OR p.userId = :id)\n" +
             "AND pv.value = :voteType" )
-    int getVoteCountForUser(@Param("id")Integer id,
+    int getVoteCountForUser(@Param("id")Integer userId,
                             @Param("voteType")PostVoteType voteType);
 }

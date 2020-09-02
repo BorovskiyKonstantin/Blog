@@ -3,6 +3,7 @@ package main.domain.post.port;
 import main.domain.post.entity.ModerationStatus;
 import main.domain.post.entity.Post;
 import main.domain.postvote.entity.PostVoteType;
+import org.springframework.data.domain.Page;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -14,21 +15,21 @@ public interface PostRepositoryPort {
 
     Integer getActivePostsCount();
 
-    List<Post> getAllPosts(String mode);
+    Page<Post> getAllPosts(int offset, int limit, String mode);
 
-    List<Post> getActivePostsByModerationStatus(ModerationStatus moderationStatus, Integer moderatorId);
+    Page<Post> getActivePostsByModerationStatus(int offset, int limit, ModerationStatus moderationStatus, Integer moderatorId);
 
-    List<Post> searchPosts(String query);
+    Page<Post> searchPosts(int offset, int limit, String query);
 
     Optional<Post> getActivePostById(Integer id);
 
-    List<Post> getPostsByDate(String date);
+    Page<Post> getPostsByDate(int offset, int limit, String date);
 
-    List<Post> getPostsByTag(String tag);
+    Page<Post> getPostsByTag(int offset, int limit, String tag);
 
     Optional<Post> findPostById(int postId);
 
-    List<Post> getCurrentUserPosts(int currentUserId, ModerationStatus moderationStatus, boolean isActive);
+    Page<Post> getCurrentUserPosts(int offset, int limit, int currentUserId, ModerationStatus moderationStatus, boolean isActive);
 
     int getCurrentUserPostsCount(Integer userId, ModerationStatus accepted, boolean b);
 
@@ -45,4 +46,10 @@ public interface PostRepositoryPort {
     int getViewsCount(Integer userId);
 
     Timestamp getFirstPublicationTimeForUser(Integer userId);
+
+    int getLikesCountByPostId(int id);
+
+    int getDislikesCountByPostId(int id);
+
+    int getNewActivePostsCount();
 }

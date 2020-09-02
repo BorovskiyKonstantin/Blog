@@ -1,19 +1,12 @@
 package main.domain.post.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
-import lombok.ToString;
 import main.domain.postcomments.entity.PostComment;
-import main.domain.postvote.entity.PostVote;
-import main.domain.postvote.entity.PostVoteType;
 import main.domain.tag.entity.Tag;
-import main.domain.user.entity.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * posts   -   посты
@@ -64,9 +57,6 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<PostComment> comments;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
-    private List<PostVote> postVotes;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "tag2post",
@@ -75,15 +65,4 @@ public class Post {
     )
     private List<Tag> tags;
 
-    public List<PostVote> getLikes() {
-        return postVotes.stream()
-                .filter(v -> v.getValue() == PostVoteType.LIKE)
-                .collect(Collectors.toList());
-    }
-
-    public List<PostVote> getDislikes() {
-        return postVotes.stream()
-                .filter(v -> v.getValue() == PostVoteType.DISLIKE)
-                .collect(Collectors.toList());
-    }
 }
